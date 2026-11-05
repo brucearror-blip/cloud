@@ -55,8 +55,10 @@
 
 | 文件 | 内容 |
 |---|---|
-| `DOR_per_image.csv` | **每只动物一行**（几个掌趾垫的平均值），**统计用这个**。`DOR_mean` 是校正后的值，`DOR_uncorrected_mean` 是未校正的值 |
-| `DOR_per_ROI.csv` | 每个掌趾垫一行：像素数、被忽略的反光像素数、R/G/B 平均值、灰卡读数、DOR |
+| `DOR_per_image.csv` | **每只动物一行**（几个圈的平均值），**统计用这个**。`DOR_mean` 是校正后的 DOR，`DOR_uncorrected_mean` 是未校正的 DOR；`Corrected_R_mean / Corrected_G_mean / Corrected_B_mean` 是校正后的 R、G、B 平均值 |
+| `DOR_per_ROI.csv` | 每个圈一行：像素数、被忽略的反光像素数、原始 R/G/B 平均值（`Mean_R/G/B`）、灰卡读数（`Card_R/G/B`）、**校正后的 R/G/B（`Corrected_R/G/B`）**、DOR |
+
+**校正后 R、G、B 的含义**：对每个通道乘一个系数，让灰卡变成中性灰（R = G = B，等于灰卡原来三个通道的平均亮度）。例如 `Corrected_R = Mean_R × ((Card_R + Card_G + Card_B) / 3) / Card_R`，G、B 同理。这样能去掉偏色，但**不会校正曝光的明暗**：同一只动物，照片拍得亮一些，R、G、B 会一起变大。所以跨批次比较时，比值类指标（DOR）比 R、G、B 的绝对值更稳；如果要报告 R、G、B 绝对值，曝光一定要固定。不勾选灰卡时，校正后的值等于原始值。
 | `rois/*.zip` | 每张图圈的区域，可以在 Fiji 的 ROI Manager 里打开查看 |
 | `qc/*_qc.jpg` | 质控图：青色框是灰卡，黄色圈是掌趾垫 |
 

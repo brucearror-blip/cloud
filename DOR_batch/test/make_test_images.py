@@ -55,15 +55,21 @@ def make(out: Path):
         card = saved[10:70, 10:70].reshape(-1, 3).mean(0)
         gains = card.mean() / card
         dors = []
+        corrs = []
         for m in masks:
             px = saved[m]
             px = px[(px < GLARE).all(1)]
             mean = px.mean(0)
             corr = mean * gains
             dors.append(corr[0] / corr.sum())
+            corrs.append(corr)
         true_dor = np.mean([np.array(p)[0] / sum(p) for p in (p1, p2)])
+        cm = np.mean(corrs, axis=0)
         rows.append({"File": name, "DOR_mean_expected": np.mean(dors),
-                     "DOR_true_colour": true_dor})
+                     "DOR_true_colour": true_dor,
+                     "Corrected_R_mean_expected": cm[0],
+                     "Corrected_G_mean_expected": cm[1],
+                     "Corrected_B_mean_expected": cm[2]})
     with open(out / "expected.csv", "w", newline="") as fh:
         wr = csv.DictWriter(fh, fieldnames=rows[0].keys())
         wr.writeheader()
@@ -85,6 +91,12 @@ def check(out: Path):
         status = "ok  " if abs(d_exp - d_got) < tol else "FAIL"
         ok &= status == "ok  "
         print(f"{status} {name}: macro {d_got:.4f}  expected {d_exp:.4f}  true colour {d_true:.4f}  group {g['Group']}")
+        for c in "RGB":
+            ce, cg = float(e[f"Corrected_{c}_mean_expected"]), float(g[f"Corrected_{c}_mean"])
+            ctol = 0.5 if name.endswith(".jpg") else 0.01
+            if abs(ce - cg) >= ctol:
+                print(f"FAIL {name}: corrected {c} macro {cg:.3f} expected {ce:.3f}"); ok = False
+        print(f"     corrected RGB macro {g['Corrected_R_mean']}/{g['Corrected_G_mean']}/{g['Corrected_B_mean']}")
     glare = [int(float(r["Glare_pixels_ignored"])) for r in per_roi if r["ROI"] == "pad1"]
     print("glare pixels ignored in pad1 per image:", glare)
     ok &= all(x == 16 for x in glare)

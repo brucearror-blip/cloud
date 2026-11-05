@@ -7,7 +7,7 @@
 //  gray card becomes neutral (R = G = B) before DOR is computed.
 //
 //  Output (in <image folder>/DOR_results/):
-//    DOR_per_ROI.csv    one row per toe-pad ROI
+//    DOR_per_ROI.csv    one row per toe-pad ROI (raw and gray-card-corrected R, G, B)
 //    DOR_per_image.csv  one row per image (mean of its ROIs)  <- use for stats
 //    rois/<image>.zip   the ROIs you drew (reloaded on re-runs)
 //    qc/<image>_qc.jpg  photo with the ROIs drawn on it, for checking
@@ -148,17 +148,20 @@ for (f = 0; f < files.length; f++) {
 
     // ---- measure each toe pad ----
     sumDor = 0; sumRaw = 0; nOk = 0;
+    sumR2 = 0; sumG2 = 0; sumB2 = 0;
     for (k = first; k < roiManager("count"); k++) {
         selectImage(imgID);
         roiManager("select", k);
         v = measureRGB();
         if (v[3] == 0) {
             dorRaw = NaN; dor = NaN;
+            R2 = NaN; G2 = NaN; B2 = NaN;
         } else {
             dorRaw = v[0] / (v[0] + v[1] + v[2]);
             R2 = v[0] * kR; G2 = v[1] * kG; B2 = v[2] * kB;
             dor = R2 / (R2 + G2 + B2);
             sumDor += dor; sumRaw += dorRaw; nOk++;
+            sumR2 += R2; sumG2 += G2; sumB2 += B2;
         }
         Table.set("File", r1, name, T1);
         Table.set("Group", r1, group, T1);
@@ -172,6 +175,9 @@ for (f = 0; f < files.length; f++) {
         Table.set("Card_R", r1, cR, T1);
         Table.set("Card_G", r1, cG, T1);
         Table.set("Card_B", r1, cB, T1);
+        Table.set("Corrected_R", r1, d2s(R2, 3), T1);
+        Table.set("Corrected_G", r1, d2s(G2, 3), T1);
+        Table.set("Corrected_B", r1, d2s(B2, 3), T1);
         Table.set("DOR_uncorrected", r1, d2s(dorRaw, 5), T1);
         Table.set("DOR", r1, d2s(dor, 5), T1);
         r1++;
@@ -183,9 +189,15 @@ for (f = 0; f < files.length; f++) {
     if (nOk > 0) {
         Table.set("DOR_uncorrected_mean", r2, d2s(sumRaw / nOk, 5), T2);
         Table.set("DOR_mean", r2, d2s(sumDor / nOk, 5), T2);
+        Table.set("Corrected_R_mean", r2, d2s(sumR2 / nOk, 3), T2);
+        Table.set("Corrected_G_mean", r2, d2s(sumG2 / nOk, 3), T2);
+        Table.set("Corrected_B_mean", r2, d2s(sumB2 / nOk, 3), T2);
     } else {
         Table.set("DOR_uncorrected_mean", r2, NaN, T2);
         Table.set("DOR_mean", r2, NaN, T2);
+        Table.set("Corrected_R_mean", r2, NaN, T2);
+        Table.set("Corrected_G_mean", r2, NaN, T2);
+        Table.set("Corrected_B_mean", r2, NaN, T2);
     }
     r2++;
 
