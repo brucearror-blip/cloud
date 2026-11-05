@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>实验工具箱</title>
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#1d1d1f;--muted:#6b6b70;--line:#dcdcd8;--accent:#2f6fde;--accent-ink:#fff;--warn:#b26a00;--bad:#c0392b;--good:#1e8a4c;--hl:#fff6d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181a;--panel:#212226;--ink:#ececee;--muted:#9a9aa2;--line:#38393e;--accent:#6c9cff;--accent-ink:#0b0b0c;--warn:#e0a040;--bad:#ff7a6b;--good:#5fd18f;--hl:#3a3420}}
+:root[data-theme="dark"]{--bg:#17181a;--panel:#212226;--ink:#ececee;--muted:#9a9aa2;--line:#38393e;--accent:#6c9cff;--accent-ink:#0b0b0c;--warn:#e0a040;--bad:#ff7a6b;--good:#5fd18f;--hl:#3a3420}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif}
+header{padding:20px 16px 8px;max-width:1100px;margin:0 auto}
+header h1{margin:0;font-size:22px}
+header p{margin:2px 0 0;color:var(--muted)}
+nav{max-width:1100px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;gap:6px;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--line)}
+nav button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit}
+nav button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+main{max-width:1100px;margin:0 auto;padding:12px 16px 60px}
+section.tab{display:none}section.tab.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.card h2{font-size:16px;margin:0 0 6px}.card h3{font-size:14px;margin:12px 0 4px}
+.hint{color:var(--muted);font-size:13px;margin:4px 0}
+textarea{width:100%;min-height:150px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+input,select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);max-width:100%}
+input[type=number]{width:90px}input[type=checkbox]{width:auto}
+label{display:inline-flex;align-items:center;gap:6px;margin:4px 14px 4px 0}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 0}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:7px 14px;border-radius:8px;cursor:pointer;font:inherit;margin:6px 8px 0 0}
+.btn.alt{background:transparent;color:var(--accent)}
+.tbl-wrap{overflow-x:auto;margin:6px 0}
+table{border-collapse:collapse;font-size:13px;min-width:300px}
+th,td{border:1px solid var(--line);padding:4px 8px;text-align:right;white-space:nowrap}
+th{background:var(--bg);font-weight:600}td:first-child,th:first-child{text-align:left}
+tr.hl td{background:var(--hl)}
+.sig{color:var(--bad);font-weight:600}
+.ok{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.figure{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;overflow-x:auto;display:inline-block;max-width:100%}
+.text-out{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;white-space:pre-wrap;font-size:13px}
+video{width:100%;max-height:420px;background:#000;border-radius:8px}
+.timeline{position:relative;height:26px;background:var(--bg);border:1px solid var(--line);border-radius:6px;margin:8px 0;overflow:hidden}
+.timeline .win{position:absolute;top:0;bottom:0;background:rgba(47,111,222,.15)}
+.timeline .seg{position:absolute;top:4px;bottom:4px;background:var(--bad);border-radius:2px}
+.timeline .cur{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.big{font-size:28px;font-weight:700}
+.hold{user-select:none;touch-action:none;border:2px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;margin:8px 0}
+.hold.on{border-color:var(--bad);background:rgba(192,57,43,.12)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font-size:12px}
+@media print{nav,header,footer,.noprint{display:none!important}.card{border:none}section.tab{display:none!important}section.tab.printme{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>实验工具箱</h1>
+  <p>CUMS · 中医证候 · 行为学数据处理。双击打开即可用，不需联网，数据只在本机浏览器里处理，不会上传。</p>
+</header>
+<nav id="tabs">
+  <button data-tab="stats" class="on">① 统计与作图</button>
+  <button data-tab="rand">② 随机分组 / 盲法</button>
+  <button data-tab="cums">③ CUMS 应激日程</button>
+  <button data-tab="calc">④ 数据计算</button>
+  <button data-tab="video">⑤ 悬尾 / 强迫游泳计时</button>
+</nav>
+<main>
+
+<!-- ================= ① 统计与作图 ================= -->
+<section class="tab on" id="tab-stats">
+  <div class="card">
+    <h2>粘贴数据</h2>
+    <p class="hint">直接从 Excel 复制粘贴。两种格式都可以：<br>
+      <b>长格式</b>：两列「组别　数值」，每只动物一行（DOR 程序输出的 Group / DOR_mean 列就是这种）；<br>
+      <b>宽格式</b>：第一行是组名，每列是一组的数据。组的顺序就是图上从左到右的顺序。</p>
+    <textarea id="st-data" placeholder="组别	数值
+Con	1.92
+Con	1.88
+Veh	1.41
+..."></textarea>
+    <p class="hint" id="st-detect"></p>
+    <div class="row">
+      <label>指标名称 <input id="st-name" value="Grip strength" size="16"></label>
+      <label>单位 <input id="st-unit" value="N" size="6"></label>
+      <label>对照组（标 *）<select id="st-ctrl"></select></label>
+      <label>模型组（标 #）<select id="st-model"></select></label>
+    </div>
+    <div class="row">
+      <label>统计方法 <select id="st-method">
+        <option value="auto">自动选择（推荐）</option>
+        <option value="param">单因素方差分析 + Tukey</option>
+        <option value="welch">Welch 方差分析 + Games-Howell（方差不齐）</option>
+        <option value="nonpar">Kruskal-Wallis + Dunn（非正态）</option>
+      </select></label>
+      <label>误差线 <select id="st-err"><option value="sem">SEM</option><option value="sd">SD</option></select></label>
+      <label>配色 <select id="st-color"><option value="gray">灰度（同文献）</option><option value="color">彩色</option></select></label>
+      <label><input type="checkbox" id="st-points" checked> 显示每只动物的散点</label>
+    </div>
+    <button class="btn" id="st-run">分析并作图</button>
+    <button class="btn alt" id="st-sample">填入示例数据</button>
+  </div>
+  <div id="st-out"></div>
+</section>
+
+<!-- ================= ② 随机分组 ================= -->
+<section class="tab" id="tab-rand">
+  <div class="card">
+    <h2>按基线体重（和抓力）分层随机分组，并生成盲法编码</h2>
+    <p class="hint">粘贴两列或三列：「编号　体重」或「编号　体重　抓力」，第一行可以是表头。程序把动物按基线指标排序，每 k 只（k = 组数）为一个区组，区组内随机分到各组，这样各组的基线基本一致。</p>
+    <textarea id="rd-data" placeholder="编号	体重	抓力
+M01	22.1	1.95
+M02	21.4	1.88
+..."></textarea>
+    <div class="row">
+      <label>组名（逗号分隔）<input id="rd-groups" value="Con, Veh, FLX, JPJY, QS" size="30"></label>
+      <label><input type="checkbox" id="rd-use2" checked> 同时按第三列（如抓力）平衡</label>
+      <label>随机种子 <input id="rd-seed" type="number" style="width:110px"></label>
+    </div>
+    <p class="hint">记下随机种子：同样的数据和种子，结果完全一样，可写进方法或作为原始记录。</p>
+    <button class="btn" id="rd-run">随机分组</button>
+    <button class="btn alt" id="rd-sample">填入示例数据</button>
+  </div>
+  <div id="rd-out"></div>
+</section>
+
+<!-- ================= ③ CUMS ================= -->
+<section class="tab" id="tab-cums">
+  <div class="card">
+    <h2>CUMS 应激日程生成器</h2>
+    <p class="hint">每行一种应激，格式「名称|类别」（类别可省略）。规则：同一种应激不连续两天出现；同一天的几种应激类别不同；每周内各种应激出现次数尽量平均。请换成你课题实际使用的方案。</p>
+    <textarea id="cu-list">禁食 24 h|剥夺
+禁水 24 h|剥夺
+束缚 2 h|束缚
+夹尾 1 min|疼痛
+潮湿垫料 24 h|环境
+鼠笼倾斜 45° 24 h|环境
+昼夜颠倒 24 h|节律
+4 °C 冰水游泳 5 min|温度
+空笼（无垫料）24 h|环境
+噪音 1 h|感官
+频闪光照 12 h|感官</textarea>
+    <div class="row">
+      <label>开始日期 <input type="date" id="cu-start"></label>
+      <label>周数 <input type="number" id="cu-weeks" value="4" min="1" max="16"></label>
+      <label>每天应激数 <select id="cu-per"><option>1</option><option selected>2</option><option>3</option></select></label>
+      <label>随机种子 <input type="number" id="cu-seed" style="width:110px"></label>
+    </div>
+    <button class="btn" id="cu-run">生成日程</button>
+  </div>
+  <div id="cu-out"></div>
+</section>
+
+<!-- ================= ④ 数据计算 ================= -->
+<section class="tab" id="tab-calc">
+  <div class="card">
+    <h2>数据计算</h2>
+    <div class="row">
+      <label>工具 <select id="ca-tool">
+        <option value="spt">糖水偏好（SPT）</option>
+        <option value="grip">抓力（多次测量 → 平均 / 最大 / 体重校正）</option>
+        <option value="bw">体重变化（多个时间点）</option>
+        <option value="unblind">揭盲合并（按编号或盲码补上组别）</option>
+      </select></label>
+    </div>
+    <p class="hint" id="ca-help"></p>
+    <textarea id="ca-data"></textarea>
+    <div id="ca-extra" style="display:none">
+      <h3>分组总表（编号或盲码　组别）</h3>
+      <textarea id="ca-key" style="min-height:100px"></textarea>
+    </div>
+    <button class="btn" id="ca-run">计算</button>
+    <button class="btn alt" id="ca-sample">填入示例数据</button>
+  </div>
+  <div id="ca-out"></div>
+</section>
+
+<!-- ================= ⑤ 视频计时 ================= -->
+<section class="tab" id="tab-video">
+  <div class="card">
+    <h2>悬尾 / 强迫游泳：不动时间手动计时</h2>
+    <p class="hint">打开一段实验视频，播放时<b>动物不动就按住空格键，一动就松开</b>（或用鼠标按住下面的方框）。程序只统计「统计时段」内的不动时间，常用 6 min 视频的后 4 min（120–360 s）。<b>P</b> 键播放 / 暂停，<b>←/→</b> 后退 / 前进 5 s。计时时请设盲：用编号或盲码，不看组别。</p>
+    <div class="row">
+      <label>视频文件 <input type="file" id="vd-file" accept="video/*"></label>
+      <label>播放速度 <select id="vd-rate"><option>0.5</option><option>0.75</option><option selected>1</option><option>1.5</option><option>2</option></select></label>
+    </div>
+    <video id="vd-video" controls></video>
+    <div class="timeline" id="vd-tl"><div class="win" id="vd-win"></div><div class="cur" id="vd-cur"></div></div>
+    <div class="hold" id="vd-hold">按住空格键或按住这里 = 不动</div>
+    <div class="grid2">
+      <div>
+        <div class="row">
+          <label>统计时段（s）<input type="number" id="vd-ws" value="120"> – <input type="number" id="vd-we" value="360"></label>
+        </div>
+        <div class="row">
+          <label>动物编号 / 盲码 <input id="vd-id" size="10"></label>
+          <label>试验 <select id="vd-test"><option>TST</option><option>FST</option></select></label>
+        </div>
+      </div>
+      <div>
+        <div>时段内不动时间：<span class="big" id="vd-imm">0.0</span> s</div>
+        <div class="hint" id="vd-info">当前 0.0 s · 不动段数 0 · 首次不动潜伏期 –</div>
+      </div>
+    </div>
+    <button class="btn" id="vd-save">保存本只，计下一只</button>
+    <button class="btn alt" id="vd-undo">撤销上一段</button>
+    <button class="btn alt" id="vd-clear">清空本只</button>
+  </div>
+  <div class="card">
+    <h2>已保存的结果</h2>
+    <p class="hint">结果自动保存在本浏览器里，关掉页面也不会丢失；换电脑或清空浏览器数据前请先下载 CSV。</p>
+    <div id="vd-res"></div>
+    <button class="btn" id="vd-dl">下载 CSV</button>
+    <button class="btn alt" id="vd-reset">清空全部结果</button>
+  </div>
+</section>
+</main>
+<footer>统计方法已与 Python scipy / statsmodels / pingouin 的结果逐项核对。数据只在本机处理。</footer>
+
+<script>
+/*__STATS__*/
+</script>
+<script>
+"use strict";
+const S = window.Stats;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------------- common helpers ----------------
+function parseTable(text) {
+  const lines = String(text).replace(/\r/g, "").split("\n").filter(l => l.trim() !== "");
+  if (!lines.length) return [];
+  const tab = lines.some(l => l.includes("\t")), comma = !tab && lines.some(l => l.includes(","));
+  return lines.map(l => (tab ? l.split("\t") : comma ? l.split(",") : l.trim().split(/\s+/)).map(c => c.trim()));
+}
+function num(s) { if (s == null) return NaN; s = String(s).trim(); if (s === "") return NaN; const v = Number(s); return isFinite(v) ? v : NaN; }
+function f(x, d = 2) { return x == null || !isFinite(x) ? "–" : x.toFixed(d); }
+function fmtP(p) { if (!isFinite(p)) return "–"; return p < 0.001 ? "< 0.001" : "= " + p.toFixed(3); }
+function stars(p, ch) { return p < 0.001 ? ch.repeat(3) : p < 0.01 ? ch.repeat(2) : p < 0.05 ? ch : ""; }
+function toCSV(rows) { return rows.map(r => r.map(c => { c = c == null ? "" : String(c); return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(",")).join("\n"); }
+function download(name, content, type) {
+  const blob = content instanceof Blob ? content : new Blob([type === "text/csv" ? "﻿" + content : content], { type: (type || "text/plain") + ";charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function tableHTML(head, rows, hlRows) {
+  return '<div class="tbl-wrap"><table><thead><tr>' + head.map(h => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map((r, i) => "<tr" + (hlRows && hlRows[i] ? ' class="hl"' : "") + ">" + r.map(c => "<td>" + (c && c.html ? c.html : esc(c == null ? "" : c)) + "</td>").join("") + "</tr>").join("") +
+    "</tbody></table></div>";
+}
+function store(key, val) { try { if (val === undefined) return JSON.parse(localStorage.getItem(key) || "null"); localStorage.setItem(key, JSON.stringify(val)); } catch (e) { return null; } }
+function today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function newSeed() { return Math.floor(100000 + Math.random() * 900000); }
+
+// tabs
+document.querySelectorAll("#tabs button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function showTab(t) {
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  document.querySelectorAll("section.tab").forEach(s => s.classList.toggle("on", s.id === "tab-" + t));
+  store("labtoolkit.tab", t);
+}
+
+// ---------------- plotting ----------------
+function niceScale(lo, hi, n = 5) {
+  if (hi === lo) hi = lo + 1;
+  const raw = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw / mag;
+  const step = (r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10) * mag;
+  const min = Math.floor(lo / step) * step, max = Math.ceil(hi / step) * step, ticks = [];
+  for (let v = min; v <= max + step / 2; v += step) ticks.push(+v.toFixed(10));
+  return { min, max, ticks, step };
+}
+function tickLabel(v, step) { const d = Math.max(0, -Math.floor(Math.log10(step) + 1e-9)); return v.toFixed(Math.min(d, 6)); }
+const PAL_COLOR = ["#ffffff", "#3b3b3b", "#4C78A8", "#F58518", "#54A24B", "#B279A2", "#E45756", "#72B7B2", "#9D755D"];
+function barColors(names, ctrl, model, scheme) {
+  const out = {}; let i = 0;
+  const grays = ["#555555", "#8a8a8a", "#b5b5b5", "#d6d6d6", "#6f6f6f", "#a0a0a0"];
+  const cols = ["#4C78A8", "#F58518", "#54A24B", "#B279A2", "#E45756", "#72B7B2", "#9D755D"];
+  names.forEach(n => {
+    if (n === ctrl) out[n] = "#ffffff";
+    else if (n === model) out[n] = scheme === "gray" ? "#000000" : "#3b3b3b";
+    else { out[n] = scheme === "gray" ? grays[i % grays.length] : cols[i % cols.length]; i++; }
+  });
+  return out;
+}
+function barPlot(o) {
+  const k = o.groups.length, band = 78, L = 74, R = 16, T = 34, B = 54, H = 330;
+  const W = L + R + band * k, ph = H - T - B, rand = S.rng(12345);
+  let lo = 0, hi = 0;
+  o.groups.forEach(g => {
+    const m = S.mean(g.values), e = o.err === "sd" ? S.sd(g.values) : S.sem(g.values);
+    hi = Math.max(hi, m + (isFinite(e) ? e : 0)); lo = Math.min(lo, m - (m < 0 && isFinite(e) ? e : 0));
+    if (o.points) g.values.forEach(v => { hi = Math.max(hi, v); lo = Math.min(lo, v); });
+  });
+  const sc = niceScale(lo, hi + (hi - lo) * 0.12, 5), y = v => T + ph * (1 - (v - sc.min) / (sc.max - sc.min));
+  const font = 'font-family="Arial, Helvetica, sans-serif"';
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" ${font} font-size="13">`;
+  s += `<rect width="${W}" height="${H}" fill="#fff"/>`;
+  if (o.title) s += `<text x="${L + (W - L - R) / 2}" y="18" text-anchor="middle" font-size="15" font-weight="bold">${esc(o.title)}</text>`;
+  // axis
+  s += `<line x1="${L}" y1="${T}" x2="${L}" y2="${T + ph}" stroke="#000" stroke-width="1.5"/>`;
+  s += `<line x1="${L}" y1="${y(0)}" x2="${W - R}" y2="${y(0)}" stroke="#000" stroke-width="1.5"/>`;
+  sc.ticks.forEach(t => { s += `<line x1="${L - 5}" y1="${y(t)}" x2="${L}" y2="${y(t)}" stroke="#000" stroke-width="1.2"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${tickLabel(t, sc.step)}</text>`; });
+  s += `<text transform="translate(18,${T + ph / 2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="bold">${esc(o.yLabel)}</text>`;
+  o.groups.forEach((g, i) => {
+    const cx = L + band * (i + 0.5), bw = band * 0.6, m = S.mean(g.values), e = o.err === "sd" ? S.sd(g.values) : S.sem(g.values);
+    const top = Math.min(y(m), y(0)), hgt = Math.abs(y(m) - y(0)), fill = o.colors[g.name] || "#999";
+    s += `<rect x="${cx - bw / 2}" y="${top}" width="${bw}" height="${hgt}" fill="${fill}" stroke="#000" stroke-width="1.5"/>`;
+    if (isFinite(e)) {
+      const ye = m >= 0 ? y(m + e) : y(m - e);
+      s += `<line x1="${cx}" y1="${y(m)}" x2="${cx}" y2="${ye}" stroke="#000" stroke-width="1.5"/><line x1="${cx - 9}" y1="${ye}" x2="${cx + 9}" y2="${ye}" stroke="#000" stroke-width="1.5"/>`;
+    }
+    let peak = m + (isFinite(e) && m >= 0 ? e : 0);
+    if (o.points) g.values.forEach(v => {
+      const jx = cx + (rand() - 0.5) * bw * 0.6; peak = Math.max(peak, v);
+      s += `<circle cx="${jx.toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.2" fill="#fff" stroke="#222" stroke-width="1.1"/>`;
+    });
+    const mk = o.marks[g.name] || {}; let ty = y(peak) - 6;
+    if (mk.star) { s += `<text x="${cx}" y="${ty + 4}" text-anchor="middle" font-size="16" font-weight="bold">${mk.star}</text>`; ty -= 15; }
+    if (mk.hash) s += `<text x="${cx}" y="${ty + 2}" text-anchor="middle" font-size="13" font-weight="bold">${mk.hash}</text>`;
+    s += `<text x="${cx}" y="${T + ph + 20}" text-anchor="middle" font-weight="bold">${esc(g.name)}</text>`;
+  });
+  return s + "</svg>";
+}
+function linePlot(o) { // o.series: [{name, points:[{x, m, e}]}], o.xLabels
+  const n = o.xLabels.length, L = 74, R = 120, T = 30, B = 50, W = Math.max(420, L + R + 70 * n), H = 320, ph = H - T - B, pw = W - L - R;
+  let lo = Infinity, hi = -Infinity;
+  o.series.forEach(se => se.points.forEach(p => { if (isFinite(p.m)) { lo = Math.min(lo, p.m - (p.e || 0)); hi = Math.max(hi, p.m + (p.e || 0)); } }));
+  const pad = (hi - lo) * 0.1 || 1, sc = niceScale(lo - pad, hi + pad, 5);
+  const x = i => L + (n === 1 ? pw / 2 : pw * i / (n - 1)), y = v => T + ph * (1 - (v - sc.min) / (sc.max - sc.min));
+  const cols = ["#000000", "#E45756", "#4C78A8", "#F58518", "#54A24B", "#B279A2", "#72B7B2", "#9D755D"];
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Arial, Helvetica, sans-serif" font-size="13"><rect width="${W}" height="${H}" fill="#fff"/>`;
+  s += `<line x1="${L}" y1="${T}" x2="${L}" y2="${T + ph}" stroke="#000" stroke-width="1.5"/><line x1="${L}" y1="${T + ph}" x2="${L + pw}" y2="${T + ph}" stroke="#000" stroke-width="1.5"/>`;
+  sc.ticks.forEach(t => { s += `<line x1="${L - 5}" y1="${y(t)}" x2="${L}" y2="${y(t)}" stroke="#000"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${tickLabel(t, sc.step)}</text>`; });
+  o.xLabels.forEach((lb, i) => { s += `<text x="${x(i)}" y="${T + ph + 20}" text-anchor="middle">${esc(lb)}</text>`; });
+  s += `<text transform="translate(18,${T + ph / 2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="bold">${esc(o.yLabel)}</text>`;
+  o.series.forEach((se, si) => {
+    const c = cols[si % cols.length], pts = se.points.map((p, i) => [x(i), y(p.m), p]).filter(q => isFinite(q[2].m));
+    s += `<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts.map(q => q[0].toFixed(1) + "," + q[1].toFixed(1)).join(" ")}"/>`;
+    pts.forEach(([px, py, p]) => {
+      if (p.e) s += `<line x1="${px}" y1="${y(p.m - p.e)}" x2="${px}" y2="${y(p.m + p.e)}" stroke="${c}" stroke-width="1.3"/>`;
+      s += `<circle cx="${px}" cy="${py}" r="4" fill="${si === 0 ? "#fff" : c}" stroke="${c}" stroke-width="1.5"/>`;
+    });
+    s += `<line x1="${L + pw + 14}" y1="${T + 10 + si * 20}" x2="${L + pw + 34}" y2="${T + 10 + si * 20}" stroke="${c}" stroke-width="2"/><text x="${L + pw + 40}" y="${T + 14 + si * 20}">${esc(se.name)}</text>`;
+  });
+  return s + "</svg>";
+}
+function figureBlock(svg, base) {
+  const id = "fig" + Math.random().toString(36).slice(2, 8);
+  setTimeout(() => {
+    const el = document.getElementById(id); if (!el) return;
+    el.querySelector(".dl-svg").onclick = () => download(base + ".svg", svg, "image/svg+xml");
+    el.querySelector(".dl-png").onclick = () => svgToPng(svg, base + ".png");
+  });
+  return `<div id="${id}"><div class="figure">${svg}</div><div><button class="btn dl-png">下载 PNG（300 dpi 级）</button><button class="btn alt dl-svg">下载 SVG（矢量，可在 AI / PPT 里改）</button></div></div>`;
+}
+function svgToPng(svg, name) {
+  const m = svg.match(/width="(\d+(\.\d+)?)" height="(\d+(\.\d+)?)"/), w = +m[1], h = +m[3], scale = 4;
+  const img = new Image(), url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
+  img.onload = () => {
+    const c = document.createElement("canvas"); c.width = w * scale; c.height = h * scale;
+    const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url); c.toBlob(b => download(name, b));
+  };
+  img.src = url;
+}
+
+// ---------------- ① statistics ----------------
+function parseGroups(text) {
+  const rows = parseTable(text); if (rows.length < 2) return null;
+  const head = isNaN(num(rows[0][1])) && rows[0].length >= 2 ? 1 : 0, body = rows.slice(head);
+  const longOK = body.length > 0 && body.every(r => r.length >= 2 && r[0] !== "" && !isNaN(num(r[1]))) && body.some(r => isNaN(num(r[0])));
+  const groups = [];
+  if (longOK) {
+    const map = new Map();
+    body.forEach(r => { if (!map.has(r[0])) map.set(r[0], []); map.get(r[0]).push(num(r[1])); });
+    map.forEach((v, k) => groups.push({ name: k, values: v }));
+    return { format: "长格式（组别 + 数值）", groups };
+  }
+  const names = rows[0];
+  names.forEach((nm, c) => {
+    const v = rows.slice(1).map(r => num(r[c])).filter(x => !isNaN(x));
+    if (nm !== "" && v.length) groups.push({ name: nm, values: v });
+  });
+  return { format: "宽格式（每列一组）", groups };
+}
+function refreshGroupSelects() {
+  const p = parseGroups($("#st-data").value), det = $("#st-detect");
+  if (!p || !p.groups.length) { det.textContent = ""; return null; }
+  det.innerHTML = "识别为" + p.format + "：" + p.groups.map(g => esc(g.name) + "（n=" + g.values.length + "）").join("、");
+  const names = p.groups.map(g => g.name);
+  [["#st-ctrl", 0], ["#st-model", 1]].forEach(([sel, def]) => {
+    const el = $(sel), prev = el.value;
+    el.innerHTML = (sel === "#st-model" ? '<option value="">（不标 #）</option>' : "") + names.map(n => `<option>${esc(n)}</option>`).join("");
+    el.value = names.includes(prev) ? prev : (names[def] || "");
+  });
+  return p;
+}
+$("#st-data").addEventListener("input", refreshGroupSelects);
+$("#st-sample").onclick = () => {
+  const d = { Con: [1.95, 1.88, 2.01, 1.92, 1.85, 1.97, 1.90, 1.99, 1.87, 1.93], Veh: [1.42, 1.51, 1.38, 1.47, 1.40, 1.55, 1.36, 1.44, 1.49, 1.41],
+    FLX: [1.70, 1.82, 1.66, 1.79, 1.75, 1.85, 1.68, 1.77, 1.73, 1.80], JPJY: [1.72, 1.78, 1.69, 1.81, 1.74, 1.70, 1.76, 1.79, 1.71, 1.77],
+    QS: [2.02, 2.10, 1.98, 2.08, 2.05, 2.12, 2.00, 2.07, 2.03, 2.09] };
+  $("#st-data").value = "组别\t抓力\n" + Object.entries(d).flatMap(([g, v]) => v.map(x => g + "\t" + x)).join("\n");
+  $("#st-name").value = "Grip strength"; $("#st-unit").value = "N"; refreshGroupSelects(); runStats();
+};
+function pairP(pairs, a, b) { const r = pairs.find(p => (p.a === a && p.b === b) || (p.a === b && p.b === a)); return r ? r.p : NaN; }
+function runStats() {
+  const p = refreshGroupSelects(), out = $("#st-out");
+  if (!p || p.groups.length < 2) { out.innerHTML = '<div class="card bad">至少需要 2 组数据。</div>'; return; }
+  const groups = p.groups, small = groups.filter(g => g.values.length < 2);
+  if (small.length) { out.innerHTML = '<div class="card bad">每组至少需要 2 个数据：' + small.map(g => esc(g.name)).join("、") + "</div>"; return; }
+  const ctrl = $("#st-ctrl").value, model = $("#st-model").value, errType = $("#st-err").value;
+  const name = $("#st-name").value.trim() || "指标", unit = $("#st-unit").value.trim(), yLabel = unit ? `${name} (${unit})` : name;
+  const sw = groups.map(g => g.values.length >= 3 ? S.shapiro(g.values) : { W: NaN, p: NaN });
+  const bf = S.levene(groups), normal = sw.every(r => !(r.p < 0.05)), equalVar = !(bf.p < 0.05);
+  let method = $("#st-method").value, reason = "";
+  if (method === "auto") {
+    if (!normal) { method = "nonpar"; reason = "有组不服从正态分布（Shapiro-Wilk P < 0.05），自动改用非参数检验。"; }
+    else if (!equalVar) { method = "welch"; reason = "各组正态，但方差不齐（Brown-Forsythe P < 0.05），自动改用 Welch 方差分析 + Games-Howell。"; }
+    else { method = "param"; reason = "各组正态且方差齐，使用单因素方差分析 + Tukey。"; }
+  }
+  let main, pairs, testName, postName, mainText;
+  if (method === "param") { main = S.anova(groups); pairs = S.tukey(groups); testName = "单因素方差分析"; postName = "Tukey"; mainText = `F(${main.df1}, ${main.df2}) = ${f(main.F)}, P ${fmtP(main.p)}`; }
+  else if (method === "welch") { main = S.welchAnova(groups); pairs = S.gamesHowell(groups); testName = "Welch 方差分析"; postName = "Games-Howell"; mainText = `F(${main.df1}, ${f(main.df2, 1)}) = ${f(main.F)}, P ${fmtP(main.p)}`; }
+  else { main = S.kruskal(groups); pairs = S.dunn(groups); testName = "Kruskal-Wallis 检验"; postName = "Dunn（Bonferroni 校正）"; mainText = `H(${main.df}) = ${f(main.H)}, P ${fmtP(main.p)}`; }
+  // marks
+  const marks = {};
+  groups.forEach(g => {
+    marks[g.name] = {};
+    if (g.name !== ctrl) marks[g.name].star = stars(pairP(pairs, g.name, ctrl), "*");
+    if (model && g.name !== model && g.name !== ctrl) marks[g.name].hash = stars(pairP(pairs, g.name, model), "#");
+  });
+  const mean = g => S.mean(g.values);
+  // tables
+  const desc = groups.map((g, i) => [g.name, g.values.length, f(mean(g), 3), f(S.sd(g.values), 3), f(S.sem(g.values), 3), f(S.median(g.values), 3),
+    { html: isFinite(sw[i].p) ? (sw[i].p < 0.05 ? `<span class="warn">${f(sw[i].p, 3)}</span>` : f(sw[i].p, 3)) : "n<3" }]);
+  const pairRows = pairs.map(r => [r.a + " vs " + r.b, f(r.diff != null ? r.diff : S.mean(groups.find(g => g.name === r.a).values) - S.mean(groups.find(g => g.name === r.b).values), 3),
+    { html: r.p < 0.05 ? `<span class="sig">${r.p < 0.001 ? "< 0.001" : f(r.p, 3)}</span>` : f(r.p, 3) }, stars(r.p, "*") || "ns"]);
+  const hl = pairs.map(r => [r.a, r.b].includes(ctrl) || (model && [r.a, r.b].includes(model)));
+  // text
+  const errName = errType === "sd" ? "均数 ± 标准差（mean ± SD）" : "均数 ± 标准误（mean ± SEM）";
+  const methodsTxt = `数据以${errName}表示。采用 Shapiro-Wilk 检验评估正态性，Brown-Forsythe 检验评估方差齐性。` +
+    (method === "param" ? "组间比较采用单因素方差分析（one-way ANOVA），事后两两比较采用 Tukey 检验。" :
+      method === "welch" ? "因方差不齐，组间比较采用 Welch 方差分析，事后两两比较采用 Games-Howell 检验。" :
+        "因数据不服从正态分布，组间比较采用 Kruskal-Wallis 检验，事后两两比较采用 Dunn 检验（Bonferroni 校正）。") + "以 P < 0.05 为差异有统计学意义。";
+  function cmpText(ref, exclude) {
+    const sig = [], ns = [];
+    groups.forEach(g => {
+      if (g.name === ref || exclude.includes(g.name)) return;
+      const pv = pairP(pairs, g.name, ref), dir = mean(g) > mean(groups.find(x => x.name === ref)) ? "升高" : "降低";
+      (pv < 0.05 ? sig : ns).push(pv < 0.05 ? `${g.name} 组 ${name} 显著${dir}（P ${fmtP(pv)}）` : g.name);
+    });
+    let t = sig.length ? `与 ${ref} 组比较，` + sig.join("；") + "。" : "";
+    if (ns.length) t += (sig.length ? "" : `与 ${ref} 组比较，`) + ns.join("、") + " 组差异无统计学意义。";
+    return t;
+  }
+  let resultsTxt = `${name}：${testName}显示组间差异${main.p < 0.05 ? "有统计学意义" : "无统计学意义"}（${mainText}）。`;
+  if (main.p < 0.05) resultsTxt += cmpText(ctrl, model ? [] : []) + (model ? cmpText(model, [ctrl]) : "");
+  const legend = `* 与 ${ctrl} 组比较；` + (model ? `# 与 ${model} 组比较；` : "") + "一个、两个、三个符号分别表示 P < 0.05、0.01、0.001。";
+  const svg = barPlot({ groups, err: errType, points: $("#st-points").checked, colors: barColors(groups.map(g => g.name), ctrl, model, $("#st-color").value), yLabel, title: name, marks });
+  const csv = [["组别", "n", "均数", "SD", "SEM", "中位数", "Shapiro-Wilk P"], ...groups.map((g, i) => [g.name, g.values.length, mean(g), S.sd(g.values), S.sem(g.values), S.median(g.values), sw[i].p]),
+    [], ["检验", testName, mainText], ["事后检验", postName], ["比较", "均数差", "P"], ...pairs.map(r => [r.a + " vs " + r.b, r.diff != null ? r.diff : "", r.p])];
+  out.innerHTML =
+    `<div class="card"><h2>图</h2>${figureBlock(svg, name.replace(/[\\/:*?"<>|]/g, "_"))}<p class="hint">${esc(legend)} 误差线为 ${errType.toUpperCase()}。</p></div>` +
+    `<div class="card"><h2>统计结果</h2><p><b>方法：</b>${esc(testName)} + ${esc(postName)}。<span class="hint">${esc(reason)}</span></p>` +
+    `<p><b>总体检验：</b>${esc(mainText)}　·　<b>方差齐性（Brown-Forsythe）：</b>P ${fmtP(bf.p)} ${equalVar ? '<span class="ok">齐</span>' : '<span class="warn">不齐</span>'}</p>` +
+    `<h3>描述统计</h3>${tableHTML(["组别", "n", "均数", "SD", "SEM", "中位数", "Shapiro-Wilk P"], desc)}` +
+    `<h3>两两比较（${esc(postName)}）</h3><p class="hint">高亮行是与对照组或模型组的比较。</p>${tableHTML(["比较", "均数差", "P", "显著性"], pairRows, hl)}` +
+    `<button class="btn alt" id="st-csv">下载统计结果 CSV</button></div>` +
+    `<div class="card"><h2>可直接改写进论文的文字</h2><h3>统计方法</h3><div class="text-out">${esc(methodsTxt)}</div><h3>结果</h3><div class="text-out">${esc(resultsTxt)}</div>` +
+    `<p class="hint">请核对后再用：文字只是模板，专业表述请按你的论文风格修改。</p></div>`;
+  $("#st-csv").onclick = () => download(name + "_统计结果.csv", toCSV(csv), "text/csv");
+}
+$("#st-run").onclick = runStats;
+function sendToStats(name, unit, groups) {
+  $("#st-data").value = "组别\t" + name + "\n" + groups.flatMap(g => g.values.map(v => g.name + "\t" + v)).join("\n");
+  $("#st-name").value = name; $("#st-unit").value = unit || ""; refreshGroupSelects(); showTab("stats"); runStats(); window.scrollTo(0, 0);
+}
+
+// ---------------- ② randomisation ----------------
+$("#rd-seed").value = newSeed();
+$("#rd-sample").onclick = () => {
+  const r = S.rng(7); let t = "编号\t体重\t抓力\n";
+  for (let i = 1; i <= 50; i++) t += "M" + String(i).padStart(2, "0") + "\t" + (20 + r() * 4).toFixed(1) + "\t" + (1.7 + r() * 0.4).toFixed(2) + "\n";
+  $("#rd-data").value = t;
+};
+$("#rd-run").onclick = () => {
+  const rows = parseTable($("#rd-data").value), out = $("#rd-out");
+  const body = rows.filter(r => r.length >= 2 && !isNaN(num(r[1])));
+  const hasHead = rows.length && isNaN(num(rows[0][1])), head = hasHead ? rows[0] : ["编号", "体重", "指标2"];
+  const use2 = $("#rd-use2").checked && body.every(r => r.length >= 3 && !isNaN(num(r[2])));
+  const names = $("#rd-groups").value.split(/[,，、\s]+/).map(s => s.trim()).filter(Boolean), k = names.length;
+  const seed = Math.floor(num($("#rd-seed").value)) || newSeed(); $("#rd-seed").value = seed;
+  if (k < 2 || body.length < k) { out.innerHTML = '<div class="card bad">至少需要 2 个组，并且动物数不少于组数。</div>'; return; }
+  const ids = body.map(r => r[0]);
+  if (new Set(ids).size !== ids.length) { out.innerHTML = '<div class="card bad">编号有重复，请检查。</div>'; return; }
+  const v1 = body.map(r => num(r[1])), v2 = use2 ? body.map(r => num(r[2])) : null;
+  const z = (a, i) => { const sdv = S.sd(a) || 1; return (a[i] - S.mean(a)) / sdv; };
+  const rand = S.rng(seed);
+  const order = body.map((r, i) => ({ i, score: use2 ? (z(v1, i) + z(v2, i)) / 2 : z(v1, i), tie: rand() })).sort((a, b) => a.score - b.score || a.tie - b.tie);
+  const assign = new Array(body.length);
+  for (let b = 0; b < order.length; b += k) {
+    const block = order.slice(b, b + k), gs = S.shuffle(names, rand);
+    block.forEach((o, j) => { assign[o.i] = gs[j]; });
+  }
+  const codes = S.shuffle(Array.from({ length: 899 }, (_, i) => 101 + i), rand).slice(0, body.length);
+  const res = body.map((r, i) => ({ id: r[0], g: assign[i], code: String(codes[i]), v1: v1[i], v2: v2 ? v2[i] : null }));
+  const bal = names.map(g => { const s = res.filter(x => x.g === g); return { g, n: s.length, v1: s.map(x => x.v1), v2: v2 ? s.map(x => x.v2) : [] }; });
+  const a1 = S.anova(bal.map(b => ({ name: b.g, values: b.v1 }))), a2 = v2 ? S.anova(bal.map(b => ({ name: b.g, values: b.v2 }))) : null;
+  const balRows = bal.map(b => [b.g, b.n, f(S.mean(b.v1), 2) + " ± " + f(S.sd(b.v1), 2)].concat(v2 ? [f(S.mean(b.v2), 2) + " ± " + f(S.sd(b.v2), 2)] : []));
+  const full = [["编号", "组别", "盲码", head[1]].concat(v2 ? [head[2]] : []), ...res.map(x => [x.id, x.g, x.code, x.v1].concat(v2 ? [x.v2] : []))];
+  const blind = [["盲码", "编号", "备注"], ...[...res].sort((a, b) => a.code - b.code).map(x => [x.code, x.id, ""])];
+  out.innerHTML = `<div class="card"><h2>分组平衡检查</h2>${tableHTML(["组别", "n", head[1] + "（均数 ± SD）"].concat(v2 ? [head[2] + "（均数 ± SD）"] : []), balRows)}` +
+    `<p>组间比较（单因素方差分析）：${esc(head[1])} P ${fmtP(a1.p)}` + (a2 ? `；${esc(head[2])} P ${fmtP(a2.p)}` : "") +
+    `　${a1.p > 0.2 && (!a2 || a2.p > 0.2) ? '<span class="ok">各组基线均衡</span>' : '<span class="warn">基线差异偏大，可换一个随机种子再试</span>'}</p>` +
+    `<p class="hint">随机种子：${seed}。方法可写为：按基线${esc(head[1])}${v2 ? "和" + esc(head[2]) : ""}排序后进行区组随机化（区组大小 = ${k}），分为 ${k} 组。</p></div>` +
+    `<div class="card"><h2>分组结果</h2>${tableHTML(full[0], full.slice(1))}` +
+    `<button class="btn" id="rd-dl1">下载分组总表（含组别，由不参与测量的人保管）</button><button class="btn alt" id="rd-dl2">下载盲法记录表（只有盲码和编号）</button>` +
+    `<p class="hint">盲法建议：照片、视频、抓力记录都用<b>盲码</b>命名或登记，测量和分析完成后，再用「④ 数据计算 → 揭盲合并」补上组别。</p></div>`;
+  $("#rd-dl1").onclick = () => download("分组总表_种子" + seed + ".csv", toCSV(full), "text/csv");
+  $("#rd-dl2").onclick = () => download("盲法记录表_种子" + seed + ".csv", toCSV(blind), "text/csv");
+};
+
+// ---------------- ③ CUMS schedule ----------------
+$("#cu-start").value = today(); $("#cu-seed").value = newSeed();
+$("#cu-run").onclick = () => {
+  const out = $("#cu-out");
+  const list = $("#cu-list").value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const [n, c] = l.split("|"); return { name: n.trim(), cat: (c || n).trim() }; });
+  const weeks = Math.max(1, Math.floor(num($("#cu-weeks").value)) || 4), per = +$("#cu-per").value;
+  const seed = Math.floor(num($("#cu-seed").value)) || newSeed(); $("#cu-seed").value = seed;
+  const nCat = new Set(list.map(s => s.cat)).size;
+  if (list.length < per + 1 || nCat < per) { out.innerHTML = `<div class="card bad">应激种类太少：每天 ${per} 种时，至少需要 ${per + 1} 种应激、${per} 个不同类别。</div>`; return; }
+  const rand = S.rng(seed), days = [];
+  let relaxed = false;
+  for (let w = 0; w < weeks; w++) {
+    let best = null;
+    for (let attempt = 0; attempt < 4000 && !best; attempt++) {
+      const pool = []; while (pool.length < 7 * per) pool.push(...S.shuffle(list, rand));
+      const wk = [], used = pool.slice(0, 7 * per); let ok = true;
+      for (let d = 0; d < 7 && ok; d++) {
+        const dayS = used.slice(d * per, d * per + per), prev = d ? wk[d - 1] : (days.length ? days[days.length - 1] : []);
+        if (new Set(dayS.map(s => s.cat)).size < per) ok = false;
+        if (dayS.some(s => prev.some(p => p.name === s.name))) ok = false;
+        wk.push(dayS);
+      }
+      if (ok) best = wk;
+    }
+    if (!best) { relaxed = true; const pool = []; while (pool.length < 7 * per) pool.push(...S.shuffle(list, rand)); best = []; for (let d = 0; d < 7; d++) best.push(pool.slice(d * per, d * per + per)); }
+    days.push(...best);
+  }
+  const start = new Date($("#cu-start").value + "T00:00:00"), wd = "日一二三四五六";
+  const rows = days.map((d, i) => { const dt = new Date(start); dt.setDate(start.getDate() + i); const ds = dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+    return ["第 " + (Math.floor(i / 7) + 1) + " 周", "第 " + (i + 1) + " 天", ds, "周" + wd[dt.getDay()], ...d.map(s => s.name), "□"]; });
+  const head = ["周", "天", "日期", "星期", ...Array.from({ length: per }, (_, i) => "应激 " + (i + 1)), "已完成"];
+  const counts = {}; days.flat().forEach(s => { counts[s.name] = (counts[s.name] || 0) + 1; });
+  out.innerHTML = `<div class="card" id="cu-card"><h2>CUMS 日程（${weeks} 周，每天 ${per} 种，随机种子 ${seed}）</h2>` +
+    (relaxed ? '<p class="warn">部分周无法同时满足全部规则，已放宽。可以增加应激种类或换一个种子。</p>' : "") +
+    tableHTML(head, rows) + `<p class="hint">各应激出现次数：${Object.entries(counts).map(([k, v]) => esc(k) + " " + v).join("；")}</p>` +
+    `<p class="hint">提醒：做糖水偏好、体重和行为学测试的日子，记得把「禁食 / 禁水」类应激避开或改到测试后。</p>` +
+    `<div class="noprint"><button class="btn" id="cu-dl">下载 CSV</button><button class="btn alt" id="cu-print">打印</button></div></div>`;
+  $("#cu-dl").onclick = () => download("CUMS日程_种子" + seed + ".csv", toCSV([head, ...rows]), "text/csv");
+  $("#cu-print").onclick = () => { const t = $("#tab-cums"); t.classList.add("printme"); window.print(); t.classList.remove("printme"); };
+};
+
+// ---------------- ④ calculators ----------------
+const CALC = {
+  spt: { help: "列：编号　组别　糖水前　糖水后　清水前　清水后（单位 g 或 mL，第一行为表头）。糖水偏好 = 糖水消耗 ÷（糖水消耗 + 清水消耗）× 100%。",
+    sample: "编号\t组别\t糖水前\t糖水后\t清水前\t清水后\nM01\tCon\t210.5\t195.2\t208.3\t204.1\nM02\tCon\t209.8\t193.6\t211.0\t206.2\nM03\tVeh\t212.1\t205.0\t207.6\t201.9\nM04\tVeh\t210.0\t204.1\t209.2\t202.8" },
+  grip: { help: "列：编号　组别　体重　第1次　第2次 …（测几次都可以）。输出平均值、最大值，以及除以体重后的值。",
+    sample: "编号\t组别\t体重\tT1\tT2\tT3\tT4\tT5\nM01\tCon\t24.1\t1.92\t1.98\t1.85\t1.95\t1.90\nM02\tCon\t23.5\t1.88\t1.91\t1.95\t1.86\t1.89\nM03\tVeh\t21.2\t1.45\t1.40\t1.52\t1.38\t1.47\nM04\tVeh\t21.8\t1.41\t1.49\t1.44\t1.39\t1.50" },
+  bw: { help: "列：编号　组别　第0周　第1周 …（表头写时间点名称）。输出相对第一个时间点的体重变化百分比，并画各组的体重曲线（均数 ± SEM）。",
+    sample: "编号\t组别\t第0周\t第1周\t第2周\t第3周\t第4周\nM01\tCon\t22.0\t22.9\t23.8\t24.5\t25.1\nM02\tCon\t21.6\t22.4\t23.1\t23.9\t24.6\nM03\tVeh\t22.1\t22.0\t21.8\t21.5\t21.4\nM04\tVeh\t21.8\t21.9\t21.4\t21.2\t20.9" },
+  unblind: { help: "上框粘贴测量结果：第一列是编号或盲码，后面是一列或多列数值（第一行为表头）。下框粘贴分组总表：编号或盲码　组别。程序按第一列对上组别。",
+    sample: "盲码\tDOR\n512\t0.452\n287\t0.418\n733\t0.461\n145\t0.420", key: "盲码\t组别\n512\tCon\n287\tVeh\n733\tCon\n145\tVeh" },
+};
+function setCalcTool() {
+  const t = $("#ca-tool").value; $("#ca-help").textContent = CALC[t].help; $("#ca-extra").style.display = t === "unblind" ? "" : "none"; $("#ca-out").innerHTML = "";
+}
+$("#ca-tool").onchange = setCalcTool; setCalcTool();
+$("#ca-sample").onclick = () => { const t = $("#ca-tool").value; $("#ca-data").value = CALC[t].sample; if (CALC[t].key) $("#ca-key").value = CALC[t].key; };
+function groupsFrom(ids, gcol, vals) { const m = new Map(); ids.forEach((_, i) => { if (!isFinite(vals[i])) return; if (!m.has(gcol[i])) m.set(gcol[i], []); m.get(gcol[i]).push(vals[i]); }); return [...m].map(([name, values]) => ({ name, values })); }
+function calcOutput(title, head, rows, sendCols, extraHTML) {
+  const out = $("#ca-out");
+  out.innerHTML = `<div class="card"><h2>${esc(title)}</h2>${tableHTML(head, rows.map(r => r.map(c => typeof c === "number" ? f(c, 3) : c)))}` +
+    `<button class="btn alt" id="ca-dl">下载 CSV</button>` +
+    (sendCols.length ? `<div class="row" style="margin-top:8px"><label>把这一列送去统计作图 <select id="ca-col">${sendCols.map(c => `<option value="${c.i}">${esc(c.name)}</option>`).join("")}</select></label><button class="btn" id="ca-send">送去 ① 统计与作图</button></div>` : "") +
+    `</div>` + (extraHTML || "");
+  $("#ca-dl").onclick = () => download(title + ".csv", toCSV([head, ...rows]), "text/csv");
+  if (sendCols.length) $("#ca-send").onclick = () => {
+    const ci = +$("#ca-col").value, c = sendCols.find(s => s.i === ci);
+    sendToStats(c.name, c.unit, groupsFrom(rows, rows.map(r => r[1]), rows.map(r => r[ci])));
+  };
+}
+$("#ca-run").onclick = () => {
+  const t = $("#ca-tool").value, rows = parseTable($("#ca-data").value);
+  const body = rows.filter((r, i) => !(i === 0 && r.slice(2).some(c => isNaN(num(c)))));
+  const hdr = rows.length && rows[0].slice(2).some(c => isNaN(num(c))) ? rows[0] : null;
+  if (t !== "unblind" && !body.length) { $("#ca-out").innerHTML = '<div class="card bad">没有读到数据，请检查格式。</div>'; return; }
+  if (t === "spt") {
+    const warn = [];
+    const out = body.map(r => { const s = num(r[2]) - num(r[3]), w = num(r[4]) - num(r[5]); if (s < 0 || w < 0) warn.push(r[0]); return [r[0], r[1], s, w, s + w, s / (s + w) * 100]; });
+    calcOutput("糖水偏好", ["编号", "组别", "糖水消耗", "清水消耗", "总液体消耗", "糖水偏好 (%)"], out, [{ i: 5, name: "Sucrose preference", unit: "%" }, { i: 4, name: "Total fluid intake", unit: "g" }],
+      warn.length ? `<div class="card warn">消耗量为负，请核对：${warn.map(esc).join("、")}</div>` : "");
+  } else if (t === "grip") {
+    const out = body.map(r => { const bw = num(r[2]), tr = r.slice(3).map(num).filter(isFinite), m = S.mean(tr), mx = Math.max(...tr); return [r[0], r[1], tr.length, m, mx, m / bw, mx / bw]; });
+    calcOutput("抓力", ["编号", "组别", "测量次数", "平均", "最大", "平均 / 体重", "最大 / 体重"], out,
+      [{ i: 3, name: "Grip strength", unit: "N" }, { i: 4, name: "Grip strength (max)", unit: "N" }, { i: 5, name: "Grip strength / body weight", unit: "N/g" }, { i: 6, name: "Max grip / body weight", unit: "N/g" }]);
+  } else if (t === "bw") {
+    const tp = hdr ? hdr.slice(2) : body[0].slice(2).map((_, i) => "T" + i);
+    const out = body.map(r => { const v = r.slice(2).map(num); return [r[0], r[1], ...v, ...v.slice(1).map(x => (x - v[0]) / v[0] * 100)]; });
+    const head = ["编号", "组别", ...tp, ...tp.slice(1).map(x => x + " 变化 (%)")];
+    const gnames = [...new Set(out.map(r => r[1]))];
+    const mk = (offset, len) => gnames.map(g => ({ name: g, points: Array.from({ length: len }, (_, j) => { const v = out.filter(r => r[1] === g).map(r => r[2 + offset + j]).filter(isFinite); return { m: S.mean(v), e: v.length > 1 ? S.sem(v) : 0 }; }) }));
+    const svg1 = linePlot({ series: mk(0, tp.length), xLabels: tp, yLabel: "Body weight (g)" });
+    const svg2 = linePlot({ series: mk(tp.length, tp.length - 1).map(s => ({ name: s.name, points: [{ m: 0, e: 0 }, ...s.points] })), xLabels: tp, yLabel: "Body weight change (%)" });
+    const send = [...tp.map((x, j) => ({ i: 2 + j, name: "Body weight " + x, unit: "g" })), ...tp.slice(1).map((x, j) => ({ i: 2 + tp.length + j, name: "Body weight change " + x, unit: "%" }))];
+    calcOutput("体重变化", head, out, send, `<div class="card"><h2>体重曲线（均数 ± SEM）</h2>${figureBlock(svg1, "体重")}<br>${figureBlock(svg2, "体重变化百分比")}` +
+      `<p class="hint">多个时间点的严格统计应使用重复测量方差分析或混合模型（可用 SPSS / Prism）；本工具可以把单个时间点送去 ① 做组间比较。</p></div>`);
+  } else {
+    const key = parseTable($("#ca-key").value), map = new Map();
+    key.forEach((r, i) => { if (i === 0 && r[1] && /组/.test(r[1])) return; if (r.length >= 2) map.set(r[0], r[1]); });
+    if (!rows.length) { $("#ca-out").innerHTML = '<div class="card bad">没有读到测量结果。</div>'; return; }
+    const head0 = isNaN(num(rows[0][1])) ? rows[0] : ["编号", ...rows[0].slice(1).map((_, i) => "值" + (i + 1))];
+    const data = isNaN(num(rows[0][1])) ? rows.slice(1) : rows, miss = [];
+    const out = data.map(r => { const g = map.get(r[0]); if (!g) miss.push(r[0]); return [r[0], g || "（未找到）", ...r.slice(1).map(num)]; });
+    const head = [head0[0], "组别", ...head0.slice(1)];
+    calcOutput("揭盲合并", head, out, head0.slice(1).map((n, j) => ({ i: 2 + j, name: n, unit: "" })),
+      miss.length ? `<div class="card warn">这些编号在分组总表里找不到：${miss.map(esc).join("、")}</div>` : "");
+  }
+};
+
+// ---------------- ⑤ video immobility timer ----------------
+const V = { segs: [], holding: false, start: 0 };
+const vid = $("#vd-video");
+$("#vd-file").onchange = e => { const fl = e.target.files[0]; if (!fl) return; vid.src = URL.createObjectURL(fl); vid.playbackRate = +$("#vd-rate").value; const base = fl.name.replace(/\.[^.]+$/, ""); if (!$("#vd-id").value) $("#vd-id").value = base; clearSegs(); };
+$("#vd-rate").onchange = () => { vid.playbackRate = +$("#vd-rate").value; };
+function holdStart() { if (V.holding || !vid.src) return; V.holding = true; V.start = vid.currentTime; $("#vd-hold").classList.add("on"); }
+function holdEnd() { if (!V.holding) return; V.holding = false; $("#vd-hold").classList.remove("on"); const e = vid.currentTime; if (e > V.start) V.segs.push([V.start, e]); updateVideo(); }
+function videoActive() { return $("#tab-video").classList.contains("on") && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement && document.activeElement.tagName); }
+document.addEventListener("keydown", e => {
+  if (!videoActive()) return;
+  if (e.code === "Space") { e.preventDefault(); if (!e.repeat) holdStart(); }
+  else if (e.code === "KeyP") { e.preventDefault(); vid.paused ? vid.play() : vid.pause(); }
+  else if (e.code === "ArrowLeft") { e.preventDefault(); vid.currentTime = Math.max(0, vid.currentTime - 5); }
+  else if (e.code === "ArrowRight") { e.preventDefault(); vid.currentTime = Math.min(vid.duration || 0, vid.currentTime + 5); }
+});
+document.addEventListener("keyup", e => { if (e.code === "Space" && V.holding) { e.preventDefault(); holdEnd(); } });
+const hold = $("#vd-hold");
+hold.addEventListener("pointerdown", e => { e.preventDefault(); hold.setPointerCapture(e.pointerId); holdStart(); });
+hold.addEventListener("pointerup", holdEnd); hold.addEventListener("pointercancel", holdEnd);
+vid.addEventListener("keydown", e => { if (e.code === "Space") e.preventDefault(); });
+function merged() { const s = [...V.segs].sort((a, b) => a[0] - b[0]), m = []; s.forEach(x => { if (m.length && x[0] <= m[m.length - 1][1]) m[m.length - 1][1] = Math.max(m[m.length - 1][1], x[1]); else m.push([...x]); }); return m; }
+function summary() {
+  const ws = num($("#vd-ws").value) || 0, we = num($("#vd-we").value) || Infinity, m = merged();
+  let imm = 0, bouts = 0;
+  m.forEach(([a, b]) => { const lo = Math.max(a, ws), hi = Math.min(b, we); if (hi > lo) { imm += hi - lo; bouts++; } });
+  const first = m.find(([a, b]) => b > ws), lat = first ? Math.max(first[0], ws) - ws : NaN;
+  return { ws, we, imm, bouts, lat, total: m.reduce((s, [a, b]) => s + b - a, 0) };
+}
+function updateVideo() {
+  const d = vid.duration || Math.max(360, num($("#vd-we").value) || 360), sm = summary(), tl = $("#vd-tl");
+  tl.querySelectorAll(".seg").forEach(x => x.remove());
+  merged().forEach(([a, b]) => { const el = document.createElement("div"); el.className = "seg"; el.style.left = (a / d * 100) + "%"; el.style.width = Math.max(0.3, (b - a) / d * 100) + "%"; tl.appendChild(el); });
+  $("#vd-win").style.left = (sm.ws / d * 100) + "%"; $("#vd-win").style.width = (Math.max(0, Math.min(sm.we, d) - sm.ws) / d * 100) + "%";
+  $("#vd-cur").style.left = (vid.currentTime / d * 100) + "%";
+  $("#vd-imm").textContent = sm.imm.toFixed(1);
+  $("#vd-info").textContent = `当前 ${vid.currentTime.toFixed(1)} s · 时段内不动段数 ${sm.bouts} · 时段内首次不动潜伏期 ${isFinite(sm.lat) ? sm.lat.toFixed(1) + " s" : "–"}` + (V.holding ? " · 正在记录不动…" : "");
+}
+vid.addEventListener("timeupdate", updateVideo); vid.addEventListener("loadedmetadata", updateVideo);
+["#vd-ws", "#vd-we"].forEach(s => $(s).addEventListener("input", updateVideo));
+function clearSegs() { V.segs = []; V.holding = false; hold.classList.remove("on"); updateVideo(); }
+$("#vd-undo").onclick = () => { V.segs.pop(); updateVideo(); };
+$("#vd-clear").onclick = () => { if (!V.segs.length || confirm("清空这只动物已记录的不动段？")) clearSegs(); };
+let RES = store("labtoolkit.video") || [];
+function renderRes() {
+  $("#vd-res").innerHTML = RES.length ? tableHTML(["编号 / 盲码", "试验", "统计时段 (s)", "不动时间 (s)", "不动段数", "首次不动潜伏期 (s)", "记录时间"],
+    RES.map(r => [r.id, r.test, r.ws + "–" + r.we, f(r.imm, 1), r.bouts, isFinite(r.lat) ? f(r.lat, 1) : "–", r.when])) : '<p class="hint">还没有结果。</p>';
+}
+renderRes();
+$("#vd-save").onclick = () => {
+  if (V.holding) holdEnd();
+  const id = $("#vd-id").value.trim(); if (!id) { alert("请先填写动物编号或盲码。"); return; }
+  const sm = summary();
+  if (sm.we === Infinity) { alert("请填写统计时段的结束时间。"); return; }
+  if (vid.duration && vid.duration + 0.5 < sm.we) { if (!confirm(`视频只有 ${vid.duration.toFixed(1)} s，短于统计时段结束时间 ${sm.we} s。仍然保存吗？`)) return; }
+  if (RES.some(r => r.id === id && r.test === $("#vd-test").value) && !confirm(id + " 已有结果，再保存一条吗？")) return;
+  RES.push({ id, test: $("#vd-test").value, ws: sm.ws, we: sm.we, imm: +sm.imm.toFixed(2), bouts: sm.bouts, lat: isFinite(sm.lat) ? +sm.lat.toFixed(2) : null, segs: merged().map(([a, b]) => [+a.toFixed(2), +b.toFixed(2)]), when: new Date().toLocaleString() });
+  store("labtoolkit.video", RES); renderRes(); $("#vd-id").value = ""; clearSegs();
+};
+$("#vd-dl").onclick = () => download("不动时间_" + today() + ".csv", toCSV([["编号或盲码", "试验", "统计开始 (s)", "统计结束 (s)", "不动时间 (s)", "不动段数", "首次不动潜伏期 (s)", "不动区间 (s)", "记录时间"],
+  ...RES.map(r => [r.id, r.test, r.ws, r.we, r.imm, r.bouts, r.lat == null ? "" : r.lat, r.segs.map(s => s.join("-")).join(" "), r.when])]), "text/csv");
+$("#vd-reset").onclick = () => { if (RES.length && confirm("确定清空全部已保存的结果？建议先下载 CSV。")) { RES = []; store("labtoolkit.video", RES); renderRes(); } };
+
+// restore last tab
+const lastTab = store("labtoolkit.tab"); if (lastTab && document.getElementById("tab-" + lastTab)) showTab(lastTab);
+</script>
+</body>
+</html>
