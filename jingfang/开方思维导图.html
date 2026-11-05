@@ -1,0 +1,629 @@
+<title>经方开方思维导图</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* Layout: one-screen app. A bar (name, search, view switch) over a pan-and-zoom mind map; the chosen topic opens a sheet at the side (at the bottom on phones). The outline view shows the same tree as nested lists. Palette: celadon paper, ink, and nine mineral pigments, one per 方阵. */
+:root {
+  --paper: #EDF1EC;
+  --surface: #FAFCFA;
+  --ink: #1C2220;
+  --muted: #59645E;
+  --rule: #CBD4CE;
+  --focus: #2F5D8C;
+  --shadow: 0 12px 32px rgba(18, 28, 24, .16);
+  --c-flow: #3B4642;
+  --c-logic: #2F5D8C;
+  --c-review: #7E6A16;
+  --c-m1: #2A7863;
+  --c-m2: #9A5F27;
+  --c-m3: #B03E2C;
+  --c-m4: #67588C;
+  --c-m5: #33579C;
+  --c-m6: #AA4360;
+  --c-m7: #2A7186;
+  --c-m8: #863A60;
+  --c-m9: #4B5767;
+  --font-display: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111614; --surface: #19201D; --ink: #E3E9E5; --muted: #9AA79F; --rule: #2C3632; --focus: #88AADA;
+    --shadow: 0 12px 32px rgba(0, 0, 0, .45);
+    --c-flow: #B9C5BF; --c-logic: #81A4D4; --c-review: #CDB955;
+    --c-m1: #62BEA3; --c-m2: #D79F5D; --c-m3: #E57E6B; --c-m4: #AC9BD5; --c-m5: #87A3DF;
+    --c-m6: #E48BA4; --c-m7: #67B5CC; --c-m8: #D58DB3; --c-m9: #A6B2C3;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111614; --surface: #19201D; --ink: #E3E9E5; --muted: #9AA79F; --rule: #2C3632; --focus: #88AADA;
+  --shadow: 0 12px 32px rgba(0, 0, 0, .45);
+  --c-flow: #B9C5BF; --c-logic: #81A4D4; --c-review: #CDB955;
+  --c-m1: #62BEA3; --c-m2: #D79F5D; --c-m3: #E57E6B; --c-m4: #AC9BD5; --c-m5: #87A3DF;
+  --c-m6: #E48BA4; --c-m7: #67B5CC; --c-m8: #D58DB3; --c-m9: #A6B2C3;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 14px; overflow: hidden; }
+button { font: inherit; }
+.app { height: 100%; display: flex; flex-direction: column; }
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--surface); border-bottom: 1px solid var(--rule); position: relative; z-index: 15; }
+.brand { min-width: 0; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 700; letter-spacing: .06em; text-wrap: balance; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+.search { position: relative; flex: 1 1 240px; min-width: 0; max-width: 420px; }
+.search input { box-sizing: border-box; width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.search input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.results { position: absolute; top: 42px; left: 0; right: 0; z-index: 30; max-height: 62vh; overflow: auto; padding: 4px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; box-shadow: var(--shadow); }
+.results button { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.results button:hover, .results button:focus-visible { background: var(--paper); outline: none; }
+.results .r-t { font-family: var(--font-display); font-weight: 600; }
+.results .r-s { color: var(--muted); font-size: 12px; margin-left: 6px; }
+.results .r-p { display: block; margin-top: 2px; color: var(--muted); font-size: 11.5px; }
+.results .r-none { padding: 10px; color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.btn { height: 34px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 13px; cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.seg .btn { border: 0; border-radius: 0; height: 32px; }
+.seg .btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+
+main { position: relative; flex: 1; min-height: 0; }
+#map { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#map:active { cursor: grabbing; }
+
+.node { cursor: pointer; }
+.node rect.box { stroke-width: 1.2; }
+.n-root rect.box { fill: var(--ink); stroke: var(--ink); }
+.n-solid rect.box { fill: var(--fam); stroke: var(--fam); }
+.n-mid rect.box { fill: color-mix(in srgb, var(--fam) 13%, var(--surface)); stroke: color-mix(in srgb, var(--fam) 62%, var(--surface)); }
+.n-info rect.box { stroke-dasharray: 4 3; }
+.n-leaf rect.box { fill: var(--surface); stroke: color-mix(in srgb, var(--fam) 48%, var(--surface)); }
+.node text.lb { font-family: var(--font-display); font-weight: 600; fill: var(--ink); }
+.n-root text.lb, .n-solid text.lb { fill: var(--surface); font-weight: 700; }
+.node text.sb { font-family: var(--font-body); font-size: 11.5px; fill: var(--muted); }
+.n-root text.sb, .n-solid text.sb { fill: color-mix(in srgb, var(--surface) 80%, var(--fam)); }
+.node.sel rect.box { stroke: var(--fam); stroke-width: 2.8; }
+.n-solid.sel rect.box, .n-root.sel rect.box { stroke: var(--focus); }
+.node:focus { outline: none; }
+.node:focus-visible rect.box { stroke: var(--focus); stroke-width: 3; }
+.chip rect { fill: var(--surface); stroke: var(--fam); stroke-width: 1.1; }
+.chip text { font-family: var(--font-display); font-size: 11px; font-weight: 700; fill: var(--fam); }
+.tg circle { fill: var(--surface); stroke: var(--fam); stroke-width: 1.2; }
+.tg text { font-family: var(--font-body); font-size: 10px; font-weight: 700; fill: var(--fam); pointer-events: none; }
+.tg:hover circle { fill: color-mix(in srgb, var(--fam) 18%, var(--surface)); }
+.link { fill: none; stroke: var(--fam); stroke-opacity: .5; stroke-width: 1.4; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 18px; height: 11px; border-radius: 3px; border: 1px solid var(--c-m2); }
+.legend .lg-solid { background: var(--c-m2); }
+.legend .lg-mid { background: color-mix(in srgb, var(--c-m2) 13%, var(--surface)); }
+.legend .lg-leaf { background: var(--surface); }
+.legend .lg-info { background: color-mix(in srgb, var(--c-m2) 13%, var(--surface)); border-style: dashed; }
+.legend b { font-family: var(--font-display); color: var(--c-m2); border: 1px solid var(--c-m2); border-radius: 3px; padding: 0 3px; font-size: 11px; }
+
+.panel { position: absolute; top: 12px; bottom: 12px; right: max(16px, env(safe-area-inset-right, 0px)); z-index: 12; width: min(400px, 44vw); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--rule); border-top: 4px solid var(--fam); border-radius: 12px; box-shadow: var(--shadow); }
+.p-head { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px 4px 16px; }
+.crumbs { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.crumbs button { padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.crumbs button:hover { color: var(--ink); }
+.close { flex: none; width: 30px; height: 30px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; }
+.p-body { flex: 1; min-height: 0; overflow: auto; padding: 2px 18px 20px; }
+.p-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.p-title h2 { margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.35; text-wrap: balance; }
+.p-tag { padding: 1px 7px; border: 1px solid var(--fam); border-radius: 4px; color: var(--fam); font-family: var(--font-display); font-size: 12px; font-weight: 600; }
+.lead { margin: 8px 0 0; color: var(--muted); line-height: 1.65; }
+.sec { margin-top: 16px; }
+.sec h3 { margin: 0 0 6px; color: var(--fam); font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+.sec p { margin: 0 0 6px; line-height: 1.8; }
+.sec ul { margin: 0 0 6px; padding-left: 1.2em; line-height: 1.8; }
+.src { color: var(--muted); font-size: 11.5px; }
+.herbs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.herb { display: inline-flex; align-items: baseline; gap: 4px; padding: 3px 8px; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; }
+.herb b { font-family: var(--font-display); font-weight: 600; }
+.herb span { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.herb i { color: var(--muted); font-size: 11.5px; font-style: normal; }
+.herb-note { color: var(--muted); font-size: 12.5px; align-self: center; }
+.comp-name { margin: 10px 0 4px; font-family: var(--font-display); font-weight: 600; }
+.comp-from { margin-top: 4px; color: var(--muted); font-size: 11.5px; }
+.missing { color: var(--muted); }
+.go { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 7px 12px; border: 1px solid var(--fam); border-radius: 8px; background: color-mix(in srgb, var(--fam) 10%, var(--surface)); color: var(--ink); cursor: pointer; }
+.kids { display: grid; gap: 6px; }
+.kid { display: block; width: 100%; padding: 7px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; }
+.kid:hover { border-color: var(--fam); }
+.kid b { display: block; font-family: var(--font-display); font-weight: 600; }
+.kid span { color: var(--muted); font-size: 12px; }
+.srcs { display: flex; flex-wrap: wrap; gap: 6px; }
+.srcs span { padding: 1px 7px; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted); font-size: 11.5px; }
+
+.outline { position: absolute; inset: 0; overflow: auto; padding-block: 16px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.with-panel .outline { padding-right: calc(min(400px, 44vw) + 40px); }
+.outline .o-root { max-width: 920px; }
+.outline details { margin-left: 12px; padding-left: 12px; border-left: 2px solid color-mix(in srgb, var(--fam) 35%, var(--paper)); }
+.outline .o-root > details { margin-left: 0; padding-left: 0; border-left: 0; }
+.outline summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 6px 0; cursor: pointer; list-style: none; }
+.outline summary::-webkit-details-marker { display: none; }
+.outline summary::before { content: "▸"; color: var(--fam); width: 1em; flex: none; }
+.outline details[open] > summary::before { content: "▾"; }
+.o-t { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+.o-s { color: var(--muted); font-size: 12.5px; }
+.o-info { margin-left: auto; padding: 2px 8px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); color: var(--muted); font-size: 12px; cursor: pointer; }
+.o-leaf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; width: 100%; margin: 2px 0; padding: 6px 10px; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.o-leaf:hover, .o-leaf.on { border-color: var(--rule); background: var(--surface); }
+.o-leaf .o-t { font-size: 14.5px; }
+.o-chip { padding: 0 4px; border: 1px solid var(--fam); border-radius: 3px; color: var(--fam); font-family: var(--font-display); font-size: 11px; font-weight: 700; }
+
+@media (max-width: 720px) {
+  .brand p { display: none; }
+  .search { order: 3; flex-basis: 100%; max-width: none; }
+  .panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 62%; border-radius: 14px 14px 0 0; border-left: 0; border-right: 0; border-bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .p-head { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .p-body { padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+  .with-panel .outline { padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 62vh; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <h1>经方开方思维导图</h1>
+      <p>看病流程 → 选法 → 九个方阵里选方 → 复诊守转。点节点展开，旁边显示什么情况用、不用转到哪、原方组成。</p>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="搜方名或症状，如 小品黄芪汤、按肿、痤疮" autocomplete="off" aria-label="搜索方名或症状">
+      <div id="results" class="results" role="listbox" hidden></div>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="视图">
+        <button id="v-map" class="btn" aria-pressed="true">导图</button>
+        <button id="v-outline" class="btn" aria-pressed="false">大纲</button>
+      </div>
+      <button id="b-fit" class="btn">适应屏幕</button>
+      <button id="b-reset" class="btn">收起</button>
+      <button id="b-all" class="btn">全部展开</button>
+    </div>
+  </header>
+  <main id="main">
+    <svg id="map" role="tree" aria-label="开方思维导图"></svg>
+    <div id="outline" class="outline" hidden></div>
+    <aside id="panel" class="panel" hidden aria-live="polite">
+      <div class="p-head">
+        <nav id="crumbs" class="crumbs" aria-label="位置"></nav>
+        <button id="p-close" class="close" aria-label="关闭">×</button>
+      </div>
+      <div id="p-body" class="p-body"></div>
+    </aside>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const DATA = {"id":"root","k":"root","t":"怎么开方","s":"流程 → 选法 → 方阵里选方 → 复诊","d":"这张图按《方阵定位表》《经典经方体系与看病流程》和曹老经方 skill 整理。\n点节点展开下一层；点开的节点在旁边显示：什么情况用、不用或转到哪张、原方组成和出处。\n出处：〔伤〕伤寒论讲义笔记；〔金〕金匮要略笔记；〔酸〕酸药法要；〔痹〕血痹分阴阳；〔厥〕厥阴中风三法；〔skill〕曹老医案统计；〔导〕你的思维导图。","children":[{"id":"a-flow","k":"branch","t":"一、看病流程","s":"先走完这几步，再选法","d":"每一步都写判据。错题复盘时，按这几步查是哪一步错了。","children":[{"id":"n236","k":"step","t":"0　问来路","s":"起病几日、传到哪一步、用过什么治法","d":"问发过汗、服过退烧药（津已亏，葛根汤比麻黄汤常用）、攻下过（伤胃）、清热过（伤阳）、温补过（易化热）；是否手术后、产后、大病后（津血骤亏）〔伤〕〔金〕。\n复诊先问上诊方、剂数、实际服药天数、有无外感、西药（尤其激素）变化，再和上诊对比：是病进，还是里邪出表〔skill〕。\n首诊问既往用过什么方、效果如何；曹老常复用有效的旧方〔skill〕。"},{"id":"n237","k":"step","t":"1　四诊与他觉","s":"扪手、下睑、腹按、下肢四项必查","d":"问诊先里后表：寐、情绪；寒热、汗、身、疲劳；头、心、胸；口、饮、咽、鼻、咳；纳、胃；二便；经带〔skill〕。\n他觉：扪手（凉温热、潮干）、脉、舌、面、下睑（淡白、淡红、半红半白、红鲜、暗红）、腹按（软、满、薄拘、痞硬、压痛）、下肢（干燥、甲错、血络、按肿）。缺这四项时判断可靠性明显下降〔skill〕。\n病人自诉的寒热，要用扪手、下睑、舌脉校对〔伤〕。"},{"id":"n238","k":"step","t":"2　基础病机三行","s":"表／太阴／阳明，每项写依据","d":"阳明每项标虚实：睑淡白、唇舌淡、手凉＝虚热；睑红鲜、舌唇红、面赤＝实热〔skill〕。\n口干而饮少、喜温是热不实；消水、喜冷饮才是实热〔酸〕。","children":[{"id":"n1","k":"info","t":"表","s":"表束、表寒、中风、伤营、伤精","d":"表束：怕风、吹风周身不适、头胀头晕、心慌胸闷、颈腰肢体酸痛、行走不稳、鼻塞、面部油腻、肢体不用\n表寒：怕冷、手足凉、他觉身凉、下肢凉\n中风：易汗、汗后凉或怕风、手潮、盗汗、食汗\n伤营：眠差、多梦、入睡难、手足或周身麻木、记忆力差、夜间恐惧、皮损\n伤精：肌肉萎缩、羸瘦、遗精、不孕不育"},{"id":"n2","k":"info","t":"太阴","s":"里虚、里寒、水饮、伤血、血少","d":"里虚：纳差、腹胀、嘈杂、便日 1–2 行偏软或稀、饮酒或食凉后便溏\n里寒：腹凉、小腹畏寒、食凉胃闷或胃痛\n水饮：夜尿、尿频、袜痕、按肿、目下卧蚕、白痰、流涎、带下、反酸、面肿\n伤血：下肢血络、经色暗或有血块、刷牙出血、舌紫红、目眶暗黑\n血少：下睑淡白、面色萎黄或晄白、经少"},{"id":"n3","k":"info","t":"阳明","s":"里热、里结、里燥、外热、外结、外燥、水热","d":"里热：口干、口苦、口臭、渴而饮多、牙痛、燥热\n里结：腹满膨隆、腹硬满、大便 2 日一行、腹薄拘\n里燥：大便干燥难解\n外热：自觉发热、手温、皮疹红\n外结：皮损突起、火痤血痤、色斑、瘀斑、破溃\n外燥：下肢甲错、皮肤干燥、脱屑\n水热：尿灼热、烧心"}]},{"id":"n239","k":"step","t":"3　约分","s":"先表，再太阴，以太阴校阳明","d":"表上后一层包前一层（表寒 → 中风 → 伤营 → 伤精），见伤营就治伤营；太阴后一层由前一层引起（溢饮 ← 淡饮 ← 胃虚 ← 里寒），治最前一层〔skill〕。\n热从哪里来就从哪里解：表寒郁热用辛温发散；津血虚寒以虚为主的虚热用甘温补益；以寒为主的虚热用辛热；水饮郁而化火用酸温；实火才用阳明四法〔伤〕〔厥〕。\n表证三层面：二便、经带先出问题 → 外证，纯治里，不可攻表；对外邪敏感（恶风、受凉加重、无汗身痛）→ 有表邪，发表为主；两样都没有而表证明显 → 里邪冲逆，治里为主、兼顾表〔skill〕。\n主诉看\"主诉\"一栏；lmp 和月经一栏是例行记录，不当第一层〔skill〕。"},{"id":"n240","k":"step","t":"4　复合病机","s":"六病；半病门槛；少阳还是厥阴","d":"三观定位：表里（病位）、正邪（胃气是病传关口）、津液〔skill〕。\n中风：以表（上焦）为所急所苦，并有汗出、营卫不和〔伤〕。\n半病门槛：有胃虚，又有两个方向相反、要分头对治的需要（滋胃津又化饮、补虚又去实、要解表而人虚）〔skill〕。\n以上焦表位火证为苦、1–3 日即传 → 少阳；以下焦里位水证血证为苦、缠绵 → 厥阴。厥阴要有表证；口苦而胃和不先想小柴胡汤〔skill〕。\n真厥阴（手肘以上也凉、肤冷、躁无暂安、脉微欲绝）要回阳，禁解表；被水火气血阻碍而厥的是类厥阴〔伤〕〔厥〕。"},{"id":"n241","k":"step","t":"5　四证","s":"第一层属水火气血哪一证","d":"定第一层、兼证和水火比例。辨出某一经后，一定要落实到水火气血上才算瞄准：同是太阴，水证用肾著汤，血证用黄芪建中汤〔厥〕。\n咽中痰滞、苔白腻、便偏稀而又口干脉滑，是饮为本、热为标，先化痰饮〔skill〕。\n胸闷气短、胃胀等气饮层为所急所苦时，按肿退到第二层〔skill〕。"},{"id":"n242","k":"step","t":"6　关卡","s":"阳旦排除、关键药准入、黄芪门槛","d":"阳旦排除：火证为苦、里阳盛、外证、真厥阴、表上红肿热盛、手足温热便干渴饮多〔skill〕。\n关键药准入〔skill〕：\n- 麻黄：表之津液实（有汗也可）；以血虚为苦、睑红干枯、胃虚而表上有水不用。\n- 石膏：阳明里实热基础；里虚寒易动不用。\n- 柴胡：三焦不利、上焦郁火；水结重、水寒为主、真阴虚而火为苦不用。\n- 前胡：虚人之表、水火夹杂、胃虚。\n- 桂枝：表寒、营卫不和；外证、火证、里阳盛不用。\n- 黄芪：有表证或水湿；实火重时不配桂枝。\n- 人参：有里证或胃虚。芍药：津血虚、虚热、利小便；下后表寒入里、胃气弱、表寒重去芍。\n- 茯苓：下焦饮停；外证、火证有水、胃津虚之水不用。\n- 附子：有少阴证。饴糖：胃津绝对亏虚；里实里热苔腻有饮不用。栀子：火兼虚水表；旧微溏不用。\n黄芪门槛：下肢按肿＋太阴中风底子（疲劳、乏力、易汗、恶风、睑白之一）；每诊重过〔skill〕。\n里急先救里〔伤〕。"},{"id":"n243","k":"step","t":"7　定法三刀","s":"二旦 → 表药 → 四证内的法","d":"第一刀定阴阳方向，第二刀用表药定病位，第三刀在水火气血里定具体的法。每一刀都写判据，逐一写邻法为什么不用〔skill〕。","link":"b-3dao"},{"id":"n244","k":"step","t":"8　定方","s":"进方阵 → 选行 → 选列 → 核格","d":"进方阵（按复合病机、来路）→ 选行（表证性质＋里证组合定基础方）→ 选列（水火气血哪一个是第一层）→ 核格（方眼在不在、有没有反指征，不合就按分界移格）。\n落到一张现成古方，原方原量，不临时堆药〔伤〕。\n剂量 1 两≈6g，按原方原量写。减量只在资料写明的场合：合方减半为主〔厥〕；方太猛、太苦或太贵（厚朴七物汤、黄连阿胶汤）〔金〕〔伤〕；看病情（温经汤治痛经多半量、治不孕多全量）〔伤〕；首次试探（橘皮汤先半量）〔伤〕；两味药的小方用全量〔金〕；小儿酌减。","link":"c-matrices"},{"id":"n245","k":"step","t":"9　邻方对照","s":"方眼在否、反指征、管不管第一层","d":"前 3–4 张候选方各写一行：方眼在不在、反指征有没有、管不管得到所急所苦和第一层。有反指征或管不到第一层的方不能排第一〔skill〕。\n几张都说得通时，首诊先选更轻、更窄、偏表或偏中焦祛邪的那张，补益养血留给复诊〔skill〕。\n再写 1–2 张备选（换方条件、分歧在哪一刀），和 1–2 个能推翻判断的追问，优先问他觉和来路〔skill〕。"},{"id":"n246","k":"step","t":"10　排方与复诊","s":"依病传排方；守还是转","d":"一诊可开 2–7 张方，按顺序服或交替服：阳病两三日一传，2–2 交替；阴病四至六日一传，4–4 或 5–5 交替。交替服的两张方方向相反，不能合成一方〔厥〕〔痹〕。\n常见顺序：先纠虚后攻实；先发表再清降；清火之后虚寒显，用前胡法收尾；温补之后热显，转清法；温里之后适时解表〔厥〕〔痹〕。","link":"d-review"}],"fam":"flow"},{"id":"b-choose","k":"branch","t":"二、选法：进哪个方阵","s":"按复合病机或来路；再用三刀定法","d":"先用复合病机或来路决定进哪个方阵，再用定法三刀核对：二旦定方向，表药定病位，四证定具体的法。","children":[{"id":"n282","k":"fa","t":"按复合病机进方阵","s":"九种复合病机对应九个方阵","children":[{"id":"n247","k":"route","t":"少阳中风、厥阴中风","s":"→ 方阵一：厥阴中风三法","d":"少阳中风、厥阴中风 → 方阵一：厥阴中风三法","link":"m1"},{"id":"n248","k":"route","t":"太阴中风、血痹（在表）","s":"→ 方阵二：太阴中风·辛温血痹（黄芪族）","d":"太阴中风、血痹（在表） → 方阵二：太阴中风·辛温血痹（黄芪族）","link":"m2"},{"id":"n249","k":"route","t":"阳明实火","s":"→ 方阵三：阳明四法","d":"阳明实火 → 方阵三：阳明四法","link":"m3"},{"id":"n250","k":"route","t":"类厥阴本病","s":"→ 方阵四：泻心·乌梅","d":"类厥阴本病 → 方阵四：泻心·乌梅","link":"m4"},{"id":"n251","k":"route","t":"太阳表证","s":"→ 方阵五：太阳","d":"太阳表证 → 方阵五：太阳","link":"m5"},{"id":"n252","k":"route","t":"阳明表热、阳明血痹","s":"→ 方阵六：辛寒血痹·表解肌","d":"阳明表热、阳明血痹 → 方阵六：辛寒血痹·表解肌","link":"m6"},{"id":"n253","k":"route","t":"太阴里证（虚寒、水饮、胃气）","s":"→ 方阵七：太阴温之四法·水饮","d":"太阴里证（虚寒、水饮、胃气） → 方阵七：太阴温之四法·水饮","link":"m7"},{"id":"n254","k":"route","t":"太阴伤血、虚劳","s":"→ 方阵八：建中·血","d":"太阴伤血、虚劳 → 方阵八：建中·血","link":"m8"},{"id":"n255","k":"route","t":"少阴","s":"→ 方阵九：少阴","d":"少阴 → 方阵九：少阴","link":"m9"},{"id":"n256","k":"route","t":"真厥阴","s":"→ 四逆辈","d":"真厥阴 → 四逆辈：要回阳，禁解表〔伤〕。"}]},{"id":"n283","k":"fa","t":"按来路直接定位","s":"来路决定去路","d":"来路决定去路：从太阴传入的走寒疝、虚劳方向（方阵二、方阵八）；从阳明传入的走痈脓、肠痈、阴阳毒方向（方阵六）。〔痹〕〔厥〕","children":[{"id":"n257","k":"route","t":"太阳表不解＋胃虚","s":"→ 少阳中风：柴胡桂枝汤","d":"太阳表不解＋胃虚 → 少阳中风：柴胡桂枝汤〔厥〕","link":"n6"},{"id":"n258","k":"route","t":"上一条再加胃寒（里寒）","s":"→ 厥阴中风：前胡桂枝汤（竹叶前胡汤）","d":"上一条再加胃寒（里寒） → 厥阴中风：前胡桂枝汤（竹叶前胡汤）〔厥〕","link":"n25"},{"id":"n259","k":"route","t":"再虚热转实，里阳盛去桂","s":"→ 前胡升麻地黄汤","d":"再虚热转实，里阳盛去桂 → 前胡升麻地黄汤〔厥〕","link":"n34"},{"id":"n260","k":"route","t":"太阴里阳虚＋寒饮","s":"→ 前胡苓桂术甘汤","d":"太阴里阳虚＋寒饮 → 前胡苓桂术甘汤〔厥〕","link":"n26"},{"id":"n261","k":"route","t":"少阴卫阳虚＋里热","s":"→ 前胡桂枝附子汤","d":"少阴卫阳虚＋里热 → 前胡桂枝附子汤〔厥〕","link":"n35"},{"id":"n262","k":"route","t":"太阴虚热转实（黄汗层）","s":"→ 芪芍桂酒汤","d":"太阴虚热转实（黄汗层） → 芪芍桂酒汤〔厥〕","link":"n71"},{"id":"n263","k":"route","t":"阳明虚实夹杂（大病后劳复）","s":"→ 枳实栀子豉汤","d":"阳明虚实夹杂（大病后劳复） → 枳实栀子豉汤〔厥〕","link":"n102"}]},{"id":"b-3dao","k":"fa","t":"定法三刀","s":"二旦 → 表药 → 四证内的法","children":[{"id":"n268","k":"fa","t":"第一刀：二旦","s":"阳旦、阴旦，还是二旦合","children":[{"id":"n264","k":"info","t":"阳旦","s":"气的温煦不足而见寒：桂枝、黄芪","d":"阳旦层级：桂枝甘草 → 桂枝汤 → 建中 → 青龙 → 续命 → 石散。\n太阴中风四层（后层包前层）：邪风虚热（桂枝汤）→ 水饮血痹（桂枝加黄芪汤）→ 邪风血病（黄芪桂枝五物汤）→ 风水（防己黄芪汤）、黄汗（芪芍桂酒汤）〔skill〕。"},{"id":"n265","k":"info","t":"阴旦","s":"血的濡养不足而见热：柴胡、黄芩、芍药","d":"扶阴解表、从阴面解，祖方黄芩加半夏生姜汤。里热津血不足的表证见肢痛就上桂枝、黄芪，是零分错误〔skill〕。"},{"id":"n266","k":"info","t":"二旦合","s":"寒、热同为所苦","d":"柴胡桂枝汤（两方各取半量）、竹叶前胡汤。一直温则濡养不足，一直滋则温煦不足：阴旦攻下之后多转阳旦〔skill〕〔厥〕。"},{"id":"n267","k":"info","t":"阳旦排除","s":"见这些就不用桂枝、黄芪打底","d":"火证为苦、里阳盛、外证、真厥阴、表上红肿热盛、手足温热便干渴饮多。排除阳旦后，只在阴旦、解肌、泻心、二旦合里找〔skill〕。"}]},{"id":"n275","k":"fa","t":"第二刀：表药定病位","s":"麻黄、石膏葛根、柴胡、桂枝、黄芪、前胡","children":[{"id":"n269","k":"info","t":"麻黄 → 太阳","s":"表之津液实（有汗也可）","d":"不用：以血虚为苦、睑红干枯、胃虚而表上有水。实则麻黄：睑红鲜、周身疼重、腹硬满、脉浮有力〔skill〕。","link":"m5"},{"id":"n270","k":"info","t":"石膏、葛根、升麻 → 阳明表热","s":"存津液而发汗（解肌）","d":"石膏要有阳明里实热基础，里虚寒易动不用。葛根虚实兼清、偏津亏〔skill〕。","link":"m6"},{"id":"n271","k":"info","t":"柴胡 → 少阳","s":"三焦不利、上焦郁火","d":"不用：水结重、水寒为主、真阴虚而火为苦。口苦而胃和（纳可、不呕、无胃胀反酸便稀）不先想小柴胡汤〔skill〕。","link":"m1-chai"},{"id":"n272","k":"info","t":"桂枝 → 少阴","s":"表寒、营卫不和","d":"不用：外证、火证、里阳盛。桂枝汤类的方在方阵五（中风有汗）和方阵八（建中、营血虚）〔skill〕。","link":"m9"},{"id":"n273","k":"info","t":"黄芪 → 太阴","s":"太阴病之麻黄：须有表证或水湿","d":"虚则黄芪：睑淡白、面萎黄、腹软、甲错、经少。实火重时不配桂枝。黄芪配阴旦，要同时有卫气在表不温不固和津血在里不润不降〔skill〕。","link":"m2"},{"id":"n274","k":"info","t":"前胡 → 类厥阴","s":"虚人之表、水火夹杂、胃虚","d":"前胡＝不那么温热的黄芪，水药兼补〔skill〕。","link":"m1-qian"}]},{"id":"n281","k":"fa","t":"第三刀：四证内的法","s":"水、火、气、血各有其法","children":[{"id":"n276","k":"info","t":"火：实火","s":"七行多数落实火 → 阳明四法","d":"实火、阴火七行（逐行比，多数行落哪边按哪边）〔skill〕：\n- 口渴：实火口燥喜冷饮｜阴火虽渴而喜热饮，或渴饮不一\n- 大便：实火腹满便燥｜阴火虽腹满便秘而便软或无力\n- 寒热：实火恶热不恶寒｜阴火虽恶热常伴恶寒\n- 舌：实火燥、红鲜｜阴火淡、嫩、滑\n- 下睑：实火红鲜｜阴火淡白或淡红\n- 面：实火红赤｜阴火晦暗、萎黄、苍白\n- 脉：实火实｜阴火虚\n阳明四法：苦寒（里热燔灼、不兼表虚水）；辛寒（热兼表、冲上焦表位）；咸寒（燥结、血分、水分）；酸寒（火为所苦而兼虚兼水兼表，旧微溏不可）。邻法：酸寒泻实兼顾虚，甘寒治虚兼清热。","link":"m3"},{"id":"n277","k":"info","t":"火：阴火","s":"甘、酸、咸、石，各配温或寒","d":"津液虚为所苦 → 甘、酸；火热盛为主 → 咸、石。甘温不解 → 酸温 → 咸温 → 石散。虚火重时舍开柴胡、前胡（苦泄）。津虚之水不用茯苓；虚寒为本不用麦冬、天冬〔skill〕。\n虚热不适合阳明四法：辛寒更燥伤津，咸寒攻下更溏，苦寒败胃，酸寒是火证为主的类厥阴法〔skill〕。"},{"id":"n278","k":"info","t":"水","s":"淡饮为基础；实则麻黄，虚则黄芪","d":"淡药（茯苓）的前提是下焦饮停（小便不利、夜尿、泡沫）；外证禁淡药；火证有水、津燥，用猪苓、滑石、竹茹、芦根、芍药代茯苓〔skill〕。\n表为所苦先发汗，里为所苦先利小便。实则麻黄（睑红鲜、周身疼重、腹硬满、脉浮有力），虚则黄芪（睑淡白、面萎黄、腹软、甲错、经少）。胃虚为所苦先补胃〔skill〕。\n支饮：呕 → 小半夏；眩悸 → 加茯苓；冒眩 → 泽泻汤；胸满 → 厚朴大黄；喘满痞坚 → 木防己汤；咳逆倚息 → 姜辛夏味、厚朴麻黄、青龙〔skill〕。","link":"m7"},{"id":"n279","k":"info","t":"气","s":"辛药或酸药作气药","d":"表盛、寒极、胃虚兼气 → 辛药为气药；水盛、火极、血虚兼气 → 酸药为气药；火证兼气逆 → 酸药或石药，不用辛燥的橘、朴、木香〔skill〕。\n底方桂枝生姜枳实汤：偏寒 → 枳实薤白桂枝汤；偏热 → 四逆散；兼水 → 外台茯苓饮；兼火 → 枳实栀子豉汤；血虚 → 温经汤、当归建中汤；夹杂 → 竹叶前胡汤〔skill〕。"},{"id":"n280","k":"info","t":"血","s":"在表伤营，在里伤血；血痹分阴阳","d":"在表伤营（睡眠、麻木），在里伤血（月经、出血）。被寒所凝 → 太阴血痹，辛温（黄芪、桂枝、生姜 → 建中）；被热所耗 → 阳明血痹，辛寒（葛根、芍药 → 丹皮、升麻）〔痹〕〔skill〕。\n妇科从太阴血痹传入：胃气虚 → 小品甘草干姜当归大枣汤；胃津虚 → 建中；血寒 → 当归生姜羊肉汤。没有少阴证不用附子；月经量少慎用温经汤〔skill〕。\n曹老妇科四方：吴茱萸汤（纯治水）→ 当归四逆加吴茱萸生姜汤（偏水）→ 温经汤（偏血有虚热）→ 当归建中汤〔skill〕。","link":"m8"}]}]}],"fam":"logic"},{"id":"c-matrices","k":"branch","t":"三、九个方阵：法与方","s":"进方阵 → 选行 → 选列 → 核格","d":"每个方阵先看进入条件；再按行（基础方）和列（水火气血）找格子，对照方眼和反指征定方。","children":[{"id":"m1","k":"matrix","t":"方阵一：厥阴中风三法","s":"胃虚＋寒热虚实错杂，且有表证","d":"选法\n- 柴胡法：三阳传来（太阳之表、少阳胃虚、阳明火证），火证、气证偏多，热偏实。\n- 前胡法：三阴传来（少阴之表、太阴胃虚胃寒、太阴水证），偏寒、偏水、偏虚。\n- 酸药法：里证传来（阳明、太阴伤血，虚热转实），以里证、血证、虚证为所苦；表证在而不为主（例如以小便不利、腹痛就诊，他觉见袜痕、手潮），津血偏虚。\n- 柴胡与前胡：柴胡多一个清解郁火，前胡多一个散结除水。三法可以前后衔接：柴胡法清火后虚寒显，用前胡法收尾；血不足时用酸药补敛。","children":[{"id":"m1-chai","k":"fa","t":"四逆散","s":"三阳传来，偏火偏气","d":"柴胡法：三阳传来（太阳之表、少阳胃虚、阳明火证），火证、气证偏多，热偏实。","children":[{"id":"n4","k":"row","t":"柴胡桂枝汤行","s":"太阳表束＋少阳胃虚","d":"太阳表束（发热微恶寒、支节烦疼、恶风、汗出）＋少阳胃虚（微呕、心下支结）","children":[{"id":"n6","k":"fang","t":"柴胡桂枝汤","s":"伤寒六七日、发热微恶寒、支节烦疼","use":"伤寒六七日，发热微恶寒，支节烦疼，微呕，心下支结；更年期、肢体烦疼伴情志失和〔伤〕","not":"胃胀为苦，移本行气格；以火为苦，移本行火格","src":["伤"],"comp":[{"n":"柴胡桂枝汤","c":"柴胡24 黄芩9 桂枝9 芍药9 人参9 炙甘草6 生姜9 半夏12 大枣12","from":"skill"}],"tag":"基础"},{"id":"n7","k":"fang","t":"柴胡加龙骨牡蛎汤","s":"焦虑、烦躁、耳鸣、头晕、心慌","use":"胸满烦惊，小便不利，一身尽重〔伤〕；焦虑、烦躁、耳鸣、头晕、心慌、尿黄〔skill〕","not":"没有烦惊、冲逆，移大柴胡汤〔skill〕","src":["伤","skill"],"comp":[{"n":"柴胡加龙骨牡蛎汤","c":"柴胡24 黄芩9 人参9 生姜9 大枣12 半夏12 桂枝9 茯苓9 大黄12 龙骨9 牡蛎9 青礞石9","from":"skill"}],"tag":"水"},{"id":"n8","k":"fang","t":"柴胡桂枝干姜汤","s":"火证为苦、细问又有小便数","use":"火证为苦（口苦消水、烘热、苔厚腻、口气秽浊），细问又有小便数、胃中怕凉、汗后怕风冷；上渴、中烦、下利，或大便干稀不调〔厥〕〔伤〕","not":"服后热增，移柴胡去半夏加栝楼根汤〔skill〕","src":["厥","伤","skill"],"comp":[{"n":"柴胡桂枝干姜汤","c":"柴胡48 黄芩18 炙甘草12 干姜12 桂枝18 天花粉24 牡蛎12","from":"skill"}],"tag":"火"},{"id":"n9","k":"fang","t":"圣惠柴胡桂枝枳实汤","s":"胃胀胃痛、反酸、嗳气、口干","use":"柴胡桂枝汤证加心下痞结〔厥〕；胃胀胃痛、反酸 33%、嗳气、口干 74%、恶寒恶风、头痛肩痛、潮热、情绪；按肿只轻度〔skill〕；治水、治火而冲逆不缓解〔厥〕","not":"胃胀已去，移小柴胡汤；胃实，移大柴胡汤；偏寒偏虚，移竹叶前胡汤〔skill〕","src":["厥","skill"],"comp":[{"n":"圣惠柴胡桂枝枳实汤","c":"柴胡24 黄芩9 半夏12 人参9 炙甘草6 生姜9 大枣12 桂枝9 芍药9 枳壳12 川芎12","from":"skill"}],"tag":"气"},{"id":"n10","k":"fang","t":"柴胡桂枝附子汤","s":"肢冷、津血不利、妇人腹痛","use":"肢冷、津血不利；妇人腹痛、痛经、经期头痛；久咳上气、喉中鸣〔厥〕","not":"—","src":["厥"],"comp":[{"n":"柴胡桂枝附子汤","c":"柴胡12 桂枝6 附子6 生姜12 桔梗12 川椒12 蜂蜜12","from":"讲稿"}],"tag":"血"}]},{"id":"n5","k":"row","t":"小柴胡汤行","s":"少阳胃虚＋阳明火证、胃虚不能用桂枝攻表","d":"少阳胃虚＋阳明火证；胃虚不能用桂枝攻表，或里阳盛要去桂（口苦、目赤、恶热）","children":[{"id":"n11","k":"fang","t":"小柴胡汤","s":"口苦、恶心呕、便稀、咽干目眩","use":"口苦 44%、恶心呕 44%、便稀 62%、咽干目眩、潮热；必须有胃症〔skill〕","not":"有下肢肿不用；口苦而胃和（纳可、不呕、无胃胀反酸便稀）不用〔skill〕","src":["skill"],"comp":[{"n":"小柴胡汤","c":"柴胡48 黄芩18 炙甘草18 人参18 半夏24 生姜18 大枣24","from":"skill"}],"tag":"基础"},{"id":"n12","k":"fang","t":"千金柴胡夏苓汤","s":"心慌、胸闷、尿频、情绪、焦虑","use":"小柴胡证而水逆明显：痰饮、干呕〔厥〕；心慌 75%、胸闷、尿频、情绪、焦虑、口干苦〔skill〕","not":"有下肢肿不用〔skill〕","src":["厥","skill"],"comp":[{"n":"千金柴胡夏苓汤","c":"柴胡18 半夏18 茯苓18 芍药18 生姜18 白术6 橘皮6 枳壳6 杏仁6 细辛6 泽泻6 旋覆花6 人参6","from":"skill"}],"tag":"水"},{"id":"n13","k":"fang","t":"柴胡加芒硝汤","s":"胸胁满而呕、日晡潮热、已而微利","use":"胸胁满而呕，日晡潮热，已而微利；火证而燥结〔伤〕〔厥〕","not":"—","src":["伤","厥"],"comp":[{"n":"柴胡加芒硝汤","c":"柴胡16 黄芩6 人参6 炒甘草6 生姜6 半夏8 大枣8 芒硝8","from":"讲稿"}],"tag":"火"},{"id":"n14","k":"fang","t":"大柴胡汤","s":"口干、腹满硬、便干、嗳气","use":"按之心下满痛，呕不止，心下急；水饮重而以热为主〔金〕；口干 95%、腹满硬、便干 60%、嗳气、反酸、烦躁、脉滑〔skill〕","not":"有烦惊、头晕耳鸣，移柴胡加龙骨牡蛎汤；里实去，转阳旦或柴胡桂枝枳实汤〔skill〕","src":["金","skill"],"comp":[{"n":"大柴胡汤","c":"柴胡48 黄芩18 芍药18 半夏24 生姜30 大枣24 枳壳48 大黄12","from":"skill"}],"tag":"气"},{"id":"n15","k":"fang","t":"柴胡去半夏加栝楼根汤","s":"发热而渴、劳疟、热入血室","use":"发热而渴、劳疟、热入血室；热势显而面白、唇睑淡白；产后、术后发热〔厥〕","not":"—","src":["厥"],"comp":[{"n":"柴胡去半夏加栝楼根汤","c":"柴胡48 黄芩18 炙甘草18 人参18 天花粉24 生姜12 大枣24","from":"skill"}],"tag":"血"}]},{"id":"n22","k":"group","t":"曹老常用扩展","s":"按肿、心慌、大柴胡变方、四逆散","d":"曹老在柴胡法上常用的扩展〔skill〕。","children":[{"id":"n16","k":"fang","t":"芪归柴胡汤","s":"下肢按肿＋胃胀、又有表寒困束","use":"下肢按肿＋胃胀，又有表寒困束（周身酸痛僵、受凉加重、鼻症）〔skill〕","src":["skill"],"comp":[{"n":"芪归柴胡汤","c":"柴胡24 黄芩9 半夏12 人参12 生姜24 大枣24 麻黄9 桂枝6 杏仁12 黄芪12 当归12 防风6 细辛6","from":"skill"}]},{"id":"n17","k":"fang","t":"芪芍柴胡枳实丸","s":"下肢按肿＋心慌、胸闷气短","use":"下肢按肿＋心慌、胸闷气短、腹满，没有嗳气〔skill〕","src":["skill"],"comp":[{"n":"芪芍柴胡枳实丸","c":"黄芪12 芍药12 柴胡12 枳壳12 人参12 茯苓12 炙甘草12 鳖甲12 蜂蜜12","from":"skill"}]},{"id":"n18","k":"fang","t":"柴胡茯苓枳术汤","s":"心慌胸闷、夜尿、腹凉、痞满","use":"心慌胸闷、夜尿、腹凉、痞满、头昏〔skill〕","src":["skill"],"comp":[{"n":"柴胡茯苓枳术汤","c":"柴胡18 茯苓18 枳壳9 白术9 人参9 麦冬9 生姜9","from":"skill"}]},{"id":"n19","k":"fang","t":"大柴胡去半夏大枣加升麻竹叶汤","s":"大柴胡证而胃胀、便干、脉滑","use":"大柴胡证而胃胀、便干、脉滑、恶热都重〔skill〕","src":["skill"]},{"id":"n20","k":"fang","t":"大柴胡去大枣加葳蕤知母汤","s":"胃痛、烧心、背灼热、苔剥","use":"胃痛、烧心、背灼热、苔剥〔skill〕","src":["skill"],"comp":[{"n":"大柴胡去大枣加葳蕤知母汤","c":"大柴胡汤去大枣，加玉竹12 知母12","from":"skill"}]},{"id":"n21","k":"fang","t":"四逆散","s":"气证偏热","use":"气证偏热（胸闷腹胀、情绪、痛经、手足冷）。也是酸药法枳实类的火格〔skill〕","src":["skill"],"comp":[{"n":"四逆散","c":"柴胡12 枳壳12 芍药12 炙甘草12 小麦24","from":"skill"}]}]}]},{"id":"m1-qian","k":"fa","t":"前胡法","s":"三阴传来，偏寒偏水偏虚","d":"前胡法：三阴传来（少阴之表、太阴胃虚胃寒、太阴水证），偏寒、偏水、偏虚。","children":[{"id":"n23","k":"row","t":"前胡桂枝汤行（即竹叶前胡汤）","s":"少阴表束＋太阴胃虚","d":"少阴表束（恶风寒、扪手凉）＋太阴胃虚（少气不食、纳差、便稀）","children":[{"id":"n25","k":"fang","t":"千金前胡桂枝汤（竹叶前胡汤）","s":"咳、咽痒、受凉、恶寒、扪手凉","use":"胸中逆气，心痛彻背，少气不食〔厥〕；咳 37%、咽痒、受凉、恶寒、扪手凉、舌胖齿痕、颈肩腰酸、多梦、夜尿、睑白；产后哺乳的咳〔skill〕","not":"胸闷少见（11%）；扪手凉、睑白退而脉滑、舌暗红、嗳气，移柴胡桂枝枳实汤；嗳气、燥热、痛经，移本行气格〔skill〕","src":["厥","skill"],"comp":[{"n":"竹叶前胡汤","c":"竹叶12 前胡24 黄芩9 炙甘草6 大枣12 半夏12 生姜9 人参9 桂枝9 芍药9 当归12","from":"skill"}],"tag":"基础"},{"id":"n26","k":"fang","t":"小品前胡苓桂术甘汤","s":"胸闷、气短、咳痰、心慌、口苦","use":"冷热久癖，实不能饮食，心下虚满，状如水气〔厥〕；胸闷 87%、气短、咳痰、心慌、口苦，恶热易汗而汗后恶风寒〔skill〕","not":"便干不用；烦热、苔黄、无痰，移外台桂枝茯苓汤〔skill〕","src":["厥","skill"],"comp":[{"n":"小品前胡苓桂术甘汤","c":"前胡24 生姜24 枳壳24 半夏24 白术18 茯苓24 炙甘草12 桂枝12","from":"skill"}],"tag":"水"},{"id":"n27","k":"fang","t":"千金桂甘寒石前胡大黄汤","s":"气结胸中、热在胃管、饮食呕逆","use":"气结胸中，热在胃管，饮食呕逆；方中阳明四法俱全，仍保留桂甘以出表〔厥〕","not":"—","src":["厥"],"comp":[{"n":"千金桂甘寒石前胡大黄汤","c":"桂枝12 炒甘草12 寒水石12 前胡12 大黄12 栀子12 天花粉12 知母12 硝石12 石膏12","from":"讲稿"}],"tag":"火"},{"id":"n28","k":"fang","t":"千金前胡桂枝去竹叶加石膏橘皮芎䓖汤","s":"嗳气、睑白、潮热燥热、困倦","use":"呕吐，四肢痹冷，上气腹热，三焦不调；慢性咳喘伴失眠〔厥〕；嗳气 67%、睑白、潮热燥热、困倦、耳闷、咽异物、痛经、血块〔skill〕","not":"尿黄少见（20%）〔skill〕","src":["厥","skill"],"comp":[{"n":"千金前胡桂枝去竹叶加石膏橘皮芎䓖汤","c":"前胡12 黄芩18 半夏24 人参12 甘草12 生姜30 大枣60 桂枝12 白芍18 当归12 石膏12 橘皮12 川芎12","from":"讲稿"}],"tag":"气"},{"id":"n29","k":"fang","t":"千金前胡建中汤","s":"建中底子加饮逆、嗳气、胃痛","use":"大劳虚劣，寒热呕逆，下焦虚热，小便赤痛，头痛目疼，骨肉痛，口干；身体虚羸、面白、爪甲苍白，而腹满膨隆、呕逆痰涎〔厥〕；建中底子加饮逆：嗳气、胃痛、下肢肿、夜尿、便干难解〔skill〕","not":"扪手凉者少见〔skill〕","src":["厥","skill"],"comp":[{"n":"千金前胡建中汤","c":"前胡24 半夏12 人参9 炙甘草9 生姜15 大枣24 桂枝9 芍药12 黄芪12 当归12 饴糖40 茯苓12（讲稿另一版 前胡12 生姜48 饴糖80，余各12）","from":"skill"}],"tag":"血"}]},{"id":"n24","k":"row","t":"小前胡汤行","s":"太阴胃虚＋太阴水证、表证不为所苦","d":"太阴胃虚＋太阴水证，表证不为所苦；去桂，以免激动水饮","children":[{"id":"n30","k":"fang","t":"仲景小前胡汤","s":"伤寒六七日不解、寒热往来","use":"伤寒六七日不解，寒热往来，胸胁苦满，默默不欲饮食，心烦喜呕，寒疝腹痛〔厥〕","not":"表寒明显（需要桂枝），移前胡桂枝汤行","src":["厥"],"comp":[{"n":"仲景小前胡汤","c":"前胡48 半夏24 黄芩18 生姜30 人参18 炙甘草18 大枣24","from":"skill"}],"tag":"基础"},{"id":"n31","k":"fang","t":"深师阴旦竹叶汤","s":"胃虚饮逆加轻度阳明热、扪手不凉","use":"天行后虚热、劳复，四肢沉重，气力羸弱〔厥〕；胃虚饮逆（易饥、饥时耳鸣、反酸、夜尿、便稀、痰白黏）加轻度阳明热（恶热、易汗、汗后不恶风），扪手不凉〔skill〕","not":"有任何恶风寒、扪手凉，移竹叶前胡汤〔skill〕","src":["厥","skill"],"comp":[{"n":"深师阴旦竹叶汤","c":"竹叶6 半夏48 茯苓12 生姜24 人参12 炙甘草12 大枣40 前胡12 黄芩12 知母12 石膏12 小麦48","from":"skill"}],"tag":"水"},{"id":"n32","k":"fang","t":"仲景大前胡汤","s":"伤寒八九日不解、心腹坚满","use":"伤寒八九日不解，心腹坚满，身体疼痛，内外有热，烦呕不安；整体偏虚、局部偏实；癌性便秘、肝区痛〔厥〕","not":"—","src":["厥"],"comp":[{"n":"仲景大前胡汤","c":"前胡48 黄芩18 白芍药24 大枣24 半夏24 生姜30 枳壳48 大黄12","from":"讲稿"}],"tag":"火"},{"id":"n33","k":"fang","t":"千金乌梅半夏丸","s":"咳喘在治水的基础上还要治气","use":"咳喘在治水的基础上还要治气；眼天行暴肿痒痛〔厥〕","not":"—","src":["厥"],"comp":[{"n":"千金乌梅半夏丸","c":"乌梅48 半夏48 北前胡48 生姜48 枳壳48 细辛6","from":"讲稿"}],"tag":"气"},{"id":"n34","k":"fang","t":"外台前胡升麻地黄汤","s":"热如火烧、头痛、心烦闷、乍寒乍热","use":"热如火烧，头痛，心烦闷，乍寒乍热，胸中热，呕逆；顽固皮肤病，红斑转暗、干燥脱屑〔厥〕","not":"—","src":["厥"],"comp":[{"n":"外台前胡升麻地黄汤","c":"前胡12 升麻12 生地18 枳壳12 栀子6 豆豉24 炙甘草12 黄连12 天花粉6 黄芩18","from":"skill"}],"tag":"血"}]},{"id":"n35","k":"fang","t":"前胡桂枝附子汤","s":"少阴卫阳虚加里热传来","use":"少阴卫阳虚加里热传来的，用前胡桂枝附子汤（前胡、桂枝、附子、川椒、桔梗、生姜、蜂蜜）。〔厥〕〔skill〕","src":["厥","skill"],"comp":[{"n":"前胡桂枝附子汤","c":"前胡12 桂枝12 附子12 川椒12 桔梗12 生姜12 蜂蜜12","from":"skill"}]}]},{"id":"m1-suan","k":"fa","t":"酸药法","s":"里证传来，以里证、血证、虚证为苦","d":"酸药法：里证传来（阳明、太阴伤血，虚热转实），以里证、血证、虚证为所苦；表证在而不为主（例如以小便不利、腹痛就诊，他觉见袜痕、手潮），津血偏虚。\n先按主证选类（行），再按四证选格（列）。\n里证传来的另两张要方：太阴虚热转实（黄汗层）用芪芍桂酒汤；阳明虚实夹杂（大病后劳复，火兼虚、兼水、兼表）用枳实栀子豉汤。","children":[{"id":"n40","k":"row","t":"苦酒、白酨类（主水）","s":"水、火、气、血四格","children":[{"id":"n36","k":"fang","t":"栝楼薤白半夏汤","s":"胸痹不得卧、心痛彻背","use":"胸痹不得卧，心痛彻背","comp":[{"n":"栝楼薤白半夏汤","c":"栝蒌实48 薤白18 半夏24 白酨600","from":"讲稿"}],"tag":"水"},{"id":"n37","k":"fang","t":"苦酒汤","s":"咽中伤、生疮、不能语言","use":"咽中伤、生疮，不能语言","comp":[{"n":"苦酒汤","c":"半夏6 蛋清1枚 苦酒60","from":"讲稿"}],"tag":"火"},{"id":"n38","k":"fang","t":"栝楼薤白白酨汤","s":"胸痹、喘息咳唾、胸背痛、短气","use":"胸痹，喘息咳唾，胸背痛，短气","comp":[{"n":"栝楼薤白白酨汤","c":"栝楼实48 薤白24 白酨420","from":"讲稿"}],"tag":"气"},{"id":"n39","k":"fang","t":"千金栝楼白酨汤","s":"老人虚人便秘、腹中坚、口干","use":"老人虚人便秘、腹中坚、口干，兼表寒、胸痹、轻肿；乳无汁","comp":[{"n":"千金栝楼白酨汤","c":"全瓜蒌48 白酨240","from":"讲稿"}],"tag":"血"}]},{"id":"n45","k":"row","t":"栀豉、浆水类（主火）","s":"水、火、气、血四格","children":[{"id":"n41","k":"fang","t":"蜀椒牡蛎酸浆汤","s":"带下、小便不利、口苦、经血不利","use":"带下、小便不利、口苦、经血不利，以热为主而经期恶寒","comp":[{"n":"蜀椒牡蛎酸浆汤","c":"蜀椒12 生牡蛎12 酸浆水240","from":"讲稿"}],"tag":"水"},{"id":"n42","k":"fang","t":"黄连酸浆汤","s":"久痢","use":"久痢","comp":[{"n":"黄连酸浆汤","c":"黄连6 鸡子清1枚 酸浆水240","from":"讲稿"}],"tag":"火"},{"id":"n43","k":"fang","t":"橘皮酸浆汤","s":"消导除结、相当于小儿版乌梅丸","use":"消导除结，相当于小儿版乌梅丸","comp":[{"n":"橘皮酸浆汤","c":"橘皮24 酸浆水60 蜂蜜12","from":"讲稿"}],"tag":"气"},{"id":"n44","k":"fang","t":"大豆生姜酸浆汤","s":"霍乱后烦躁卧不安、重度水肿","use":"霍乱后烦躁卧不安；重度水肿","comp":[{"n":"大豆生姜酸浆汤","c":"黑豆48 生姜24 酸浆水240","from":"讲稿"}],"tag":"血"}]},{"id":"n50","k":"row","t":"枳实、神曲类（主气）","s":"水、火、气、血四格","children":[{"id":"n46","k":"fang","t":"枳术汤","s":"心下坚、大如盘","use":"心下坚，大如盘","comp":[{"n":"枳术汤","c":"枳壳90 白术12","from":"讲稿"}],"tag":"水"},{"id":"n47","k":"fang","t":"四逆散","s":"四逆、或咳、悸、小便不利","use":"四逆，或咳、悸、小便不利、腹痛、泄利下重；虚人便秘","comp":[{"n":"四逆散","c":"柴胡12 枳壳12 芍药12 炙甘草12 小麦24","from":"skill"}],"tag":"火"},{"id":"n48","k":"fang","t":"千金麦曲丸","s":"消谷能食、肠中水气胪胀、小儿积食","use":"消谷能食，肠中水气胪胀；小儿积食","comp":[{"n":"千金麦曲丸","c":"麦芽12 神曲12 杏仁12 清酒60","from":"skill"}],"tag":"气"},{"id":"n49","k":"fang","t":"枳实芍药散","s":"产后腹痛、烦满不得卧","use":"产后腹痛，烦满不得卧","comp":[{"n":"枳实芍药散","c":"枳壳24 白芍药24 小麦48","from":"讲稿"}],"tag":"血"}]},{"id":"n55","k":"row","t":"赤小豆、服饵、石散类（主血）","s":"水、火、气、血四格","children":[{"id":"n51","k":"fang","t":"矾石汤","s":"浸脚至膝、治重度下肢水肿而不能服药","use":"浸脚至膝，治重度下肢水肿而不能服药","comp":[{"n":"矾石汤","c":"白矾12 酸浆水240","from":"讲稿"}],"tag":"水"},{"id":"n52","k":"fang","t":"硝石矾石散","s":"小便不利又大便燥结、凉血退黄","use":"小便不利又大便燥结，凉血退黄","comp":[{"n":"硝石矾石散","c":"硝石3 白矾3 小麦48","from":"讲稿"}],"tag":"火"},{"id":"n53","k":"fang","t":"百合滑石代赭汤","s":"虚热攻冲、嗳气、舌薄少苔","use":"虚热攻冲、嗳气，舌薄少苔、睑白","comp":[{"n":"百合滑石代赭汤","c":"百合70 滑石18 代赭石18","from":"讲稿"}],"tag":"气"},{"id":"n54","k":"fang","t":"赤小豆当归散","s":"血虚而有表、有水、有寒、痈脓","use":"血虚而有表、有水、有寒；痈脓、近血、血液病","comp":[{"n":"赤小豆当归散","c":"赤小豆芽48 当归6 酸浆水60","from":"skill"}],"tag":"血"}]}]}],"fam":"m1"},{"id":"m2","k":"matrix","t":"方阵二：太阴中风·黄芪族","s":"下肢按肿＋太阴中风底子","d":"层次（后层包含前层）：邪风虚热（桂枝汤，四肢烦疼）→ 水饮血痹（桂枝加黄芪汤）→ 邪风血病（黄芪桂枝五物汤，麻木）→ 风水（防己黄芪汤）、黄汗（芪芍桂酒汤，虚热转实）→ 在里：寒疝（当归生姜羊肉汤，重者乌头桂枝汤）、虚劳（黄芪建中汤）。\n入口：下肢按肿，加太阴中风底子（疲劳、乏力、易汗、恶风、睑白之一）。只有轻度水气而无按肿，不因它进黄芪族。默认先想小品黄芪汤，再按下表的方向离开它。〔skill〕","children":[{"id":"n82","k":"info","t":"先看：导图的两个轴","s":"偏水饮/偏血痹 × 轻/重","d":"- 导图把黄芪族放在\"大阳旦法（桂枝加黄芪汤方干）\"下，主证是太阴中风的水饮血痹：疲劳、腰酸、按肿。\n- 黄芪剂治风水，即汗出异常加表上的水气。\n- 再兼腰酸、疲劳、寐差多梦等伤营，就是芪芍剂（风水＋津血亏虚）：芪芍桂酒、芪芍桂瞿小豆、芪芍桂芩小豆、芪芍四逆当归、芪芍竹叶石膏、芪芍柴胡枳实丸。\n- 水饮除了就不再用黄芪，转小阳旦法（新加归地汤、桂枝新加汤）。\n- 定格用两个轴：偏水饮还是偏血痹；次要的那一头是轻还是重。\n偏水饮：次要的一头轻 → 桂枝加黄芪汤、防己黄芪汤；次要的一头重 → 黄芪桂枝五物汤（倍生姜，除水养营），下接黄芪桂枝茯苓汤、芪芍桂附归芎汤（更温）、小品黄芪汤\n偏血痹：次要的一头轻 → 小建中汤（赤芍血痹法）；次要的一头重 → 黄芪建中汤（黄芪除风水）\n- 先后：黄芪桂枝五物汤 →（出现淡饮）黄芪桂枝茯苓汤 →（水饮得除）小品黄芪汤。伤营加风水为所急所苦时首选小品黄芪汤，但苔腻、有淡饮的先用黄芪桂枝茯苓汤除水。这和上表\"心慌没了不守，多转小品黄芪汤\"一致。\n- 阴阳相对的两张：千金内补黄芪汤（淡饮＋支饮＋里虚血证，舌暗红、苔白腻）与黄芪竹叶汤（芪芍竹叶石膏汤＋四物汤，以伤营伤血为所急所苦）。\n- 风水＋里寒：黄芪配附子、干姜，或配川椒、细辛，导图把它们连到方阵一的千金柴胡桂枝茯苓丸。\n- 上表\"寒、水、火、气、血\"的方向是我按 skill 排的。导图的两个轴更根本：先用导图的轴定格，再用上表核方眼。"},{"id":"n57","k":"row","t":"基础","s":"小品黄芪汤","children":[{"id":"n56","k":"fang","t":"小品黄芪汤","s":"疲劳、多梦失眠、月经少或血块","use":"疲劳、多梦失眠、月经少或血块、睑白、下肢干燥加按肿、轻度虚热","not":"恶热、咽干、咳、喜饮，移黄芪竹叶汤；全无热而恶寒，移桂枝加黄芪汤；心慌头晕、舌胖，移黄芪桂枝茯苓汤；夜间燥热，移芪芍竹叶石膏汤","comp":[{"n":"小品黄芪汤","c":"黄芪12 桂枝12 芍药12 炙甘草12 生姜12 大枣60 黄芩6 当归12 生地12 麦冬12","from":"skill"}],"tag":"基础"}]},{"id":"n59","k":"row","t":"寒","s":"桂枝加黄芪汤、芪芍桂附归芎汤、内补黄芪汤","children":[{"id":"n58","k":"fang","t":"桂枝加黄芪汤","s":"麻木、恶风、腿膝、扪手凉","use":"麻木、恶风、腿膝、扪手凉、全无热；攻下后里实去而转阳旦","not":"便稀、脉滑不用；守方少，多转防己黄芪汤","comp":[{"n":"桂枝加黄芪汤","c":"桂枝18 芍药18 生姜18 炙甘草12 大枣24 黄芪30","from":"skill"}],"tag":"寒"},{"id":"n60","k":"fang","t":"芪芍桂附归芎汤","s":"恶寒、腹痛、关节冷痛、脉沉弱","use":"恶寒 80%、腹痛 60%、关节冷痛、脉沉弱、经淋漓","not":"脉滑不用","comp":[{"n":"芪芍桂附归芎汤","c":"黄芪12 芍药12 桂枝12 炮附子12 当归12 川芎12 炙甘草12 龙骨12 饴糖80","from":"skill"}],"tag":"寒"},{"id":"n61","k":"fang","t":"内补黄芪汤","s":"便稀、恶寒、肠鸣、多梦、咳","use":"便稀 74%、恶寒 58%、肠鸣、多梦、咳、夜尿、睑白","not":"以腹痛腹胀为主，移芪芍桂枝厚朴当归汤；胸闷气短、胃胀为苦，先用外台茯苓饮","comp":[{"n":"内补黄芪汤","c":"大枣60 干姜24 黄芪18 当归18 芍药18 半夏18 生地18 桂枝12 甘草12 茯苓12 人参12 远志12 麦冬12 五味子12 白术12 泽泻12","from":"skill"}],"tag":"寒＋水"}]},{"id":"n63","k":"row","t":"水","s":"黄芪桂枝茯苓汤、防己黄芪汤、防己茯苓汤、黄芪桂…","children":[{"id":"n62","k":"fang","t":"黄芪桂枝茯苓汤","s":"心慌、头晕、胸闷、夜尿、便稀","use":"心慌 63%、头晕、胸闷、夜尿、便稀、舌胖；主诉是痛症而兼头晕心慌胸闷、入睡难，也先用它","not":"心慌没了不守，多转小品黄芪汤；恶热、脉滑不用；无按肿而夜尿、干燥、麻木，移肾气丸","comp":[{"n":"黄芪桂枝茯苓汤","c":"黄芪18 桂枝12 茯苓12 麦冬24 五味子24 川芎12 生姜24 大枣40","from":"skill"}],"tag":"水"},{"id":"n64","k":"fang","t":"防己黄芪汤","s":"身重、腰膝痛、痛麻为主诉","use":"身重、腰膝痛、痛麻为主诉、便稀 45%、脉沉、关节积液","not":"下肢干燥、多梦，移小品黄芪汤；汗多恶热，移芪芍桂酒汤","comp":[{"n":"防己黄芪汤","c":"黄芪30 防己24 白术18 生姜18 甘草12 大枣24","from":"skill"}],"tag":"水"},{"id":"n65","k":"fang","t":"防己茯苓汤","s":"腹满、肉跳、耳鸣头晕、肠鸣","use":"腹满 86%、肉跳（聂聂动）、耳鸣头晕、肠鸣","not":"头摇手抖是伤营，移小品黄芪汤","comp":[{"n":"防己茯苓汤","c":"防己18 黄芪18 桂枝18 茯苓36 甘草12","from":"skill"}],"tag":"水"},{"id":"n66","k":"fang","t":"黄芪桂枝半夏汤","s":"咳、咽痰滞、痒、便稀、四肢烦疼","use":"咳 60%、咽痰滞、痒、便稀 60%、四肢烦疼、不欲食","not":"咳而咽干、反酸、口苦，移黄芪竹叶汤","comp":[{"n":"黄芪桂枝半夏汤","c":"黄芪12 桂枝12 半夏30 前胡24 人参6 炙甘草6 当归12 芍药12 五味子12 麦冬12 细辛6 茯苓24 生姜30 大枣30","from":"skill"}],"tag":"水（咳）"}]},{"id":"n68","k":"row","t":"火","s":"黄芪竹叶汤、芪芍竹叶石膏汤、黄芪升麻地黄汤、芪…","children":[{"id":"n67","k":"fang","t":"黄芪竹叶汤","s":"口干、咽干、痰滞、咳、反酸","use":"口干 75%、咽干、痰滞、咳、反酸、恶热、潮热、痒疹","not":"热退净，移小品黄芪汤；咳而无热，移黄芪桂枝半夏汤","comp":[{"n":"黄芪竹叶汤","c":"黄芪18 芍药18 甘草18 生姜30 大枣60 黄芩18 当归12 生地48 麦冬18 竹叶12 石膏12 人参12 半夏12 川芎12","from":"skill"}],"tag":"火"},{"id":"n69","k":"fang","t":"芪芍竹叶石膏汤","s":"脉滑、扪手热、潮热、恶热","use":"脉滑 61%、扪手热、潮热、恶热、汗多、尿黄泡沫、腰酸","not":"热退、扪手凉，移近效消渴方或小品黄芪汤","comp":[{"n":"芪芍竹叶石膏汤","c":"黄芪12 芍药12 竹叶6 石膏24 麦冬12 豆豉12 茵陈12","from":"skill"}],"tag":"火"},{"id":"n70","k":"fang","t":"黄芪升麻地黄汤","s":"脉滑、下肢干燥、口干饮不解渴","use":"脉滑 87%、下肢干燥 65%、口干饮不解渴、尿灼热、便干、血压血糖高","not":"脉不滑、睑不红，移小品黄芪汤","comp":[{"n":"黄芪升麻地黄汤","c":"黄芪12 升麻12 生地12 栀子6 黄芩9 芍药12 麦冬12 天花粉12","from":"skill"}],"tag":"火"},{"id":"n71","k":"fang","t":"芪芍桂酒汤","s":"汗多盗汗、恶风与恶热并见","use":"汗多盗汗、恶风 64% 与恶热并见、尿黄、膝颈、代谢病前期","not":"便稀软，移防己黄芪汤；全无热，移桂枝加黄芪汤","comp":[{"n":"芪芍桂酒汤","c":"黄芪30 芍药18 桂枝18 苦酒60","from":"skill"}],"tag":"火（黄汗）"},{"id":"n72","k":"fang","t":"黄芪竹叶黄芩汤","s":"欠畅、便干、烦躁、胸闷、胃胀","use":"欠畅 69%、便干、烦躁、胸闷、胃胀、恶热","not":"便稀不用","comp":[{"n":"黄芪竹叶黄芩汤","c":"生地48 竹叶48 小麦100 黄芪18 黄芩18 前胡18 大黄18 天花粉24 芍药12 木通12 升麻12 茯苓12 甘草12 知母12 人参6 当归6","from":"skill"}],"tag":"火＋气"}]},{"id":"n74","k":"row","t":"寒热错杂","s":"芪芍桂芩小豆汤、芪芍桂瞿小豆汤","children":[{"id":"n73","k":"fang","t":"芪芍桂芩小豆（牡蛎）汤","s":"便稀、受凉易泻、腹凉、加热象或下焦水热","use":"便稀、受凉易泻、腹凉（里寒），加热象（尿黄、苔黄、睑偏红、口干）或下焦水热（带黄、瘙痒、经淋漓）；这种情况先于防己黄芪汤","not":"伤营明显，移芪芍桂瞿小豆汤","comp":[{"n":"芪芍桂芩小豆汤","c":"黄芪18 芍药12 桂枝6 黄芩12 赤小豆24 白蔹6 炮附子6 清酒60（加牡蛎6）","from":"skill"}],"tag":"寒热错杂"},{"id":"n75","k":"fang","t":"芪芍桂瞿小豆汤","s":"尿黄、腰酸、白带多黄痒、月经多或少","use":"尿黄 47%、腰酸、白带多黄痒、月经多或少、血块、多梦","not":"里寒便稀，移芪芍桂芩小豆汤","comp":[{"n":"芪芍桂瞿小豆汤","c":"黄芪12 芍药12 桂枝12 瞿麦12 赤小豆24 麦冬12 白蔹12 当归12 川芎12 清酒60","from":"skill"}],"tag":"寒热错杂＋血"}]},{"id":"n77","k":"row","t":"气","s":"芪芍桂枝厚朴当归汤","children":[{"id":"n76","k":"fang","t":"芪芍桂枝厚朴当归汤","s":"腹痛、腹凉、食冷泻、胃胀","use":"腹痛、腹凉 56%、食冷泻、胃胀、痛经而腹冷便稀","not":"下肢干燥少见","comp":[{"n":"芪芍桂枝厚朴当归汤","c":"黄芪12 芍药12 桂枝12 厚朴12 当归12 甘草12 川椒12 人参12 干姜24 半夏12","from":"skill"}],"tag":"气"}]},{"id":"n79","k":"row","t":"血","s":"黄芪桂枝五物汤、芪芍七物当归汤、黄芪建中汤","children":[{"id":"n78","k":"fang","t":"黄芪桂枝五物汤","s":"麻木、肩颈、身重、肢冷","use":"麻木 62%、肩颈、身重、肢冷","not":"口干不用","comp":[{"n":"黄芪桂枝五物汤","c":"黄芪18 桂枝18 芍药18 生姜36 大枣24","from":"skill"}],"tag":"血"},{"id":"n80","k":"fang","t":"芪芍七物当归汤","s":"血块、月经异常、腹痛、扪手凉","use":"血块 71%、月经异常、腹痛、扪手凉；小品黄芪汤见效后经将至、偏恶寒","not":"脉滑不用","comp":[{"n":"芪芍七物当归汤","c":"黄芪18 当归18 芍药18 人参12 阿胶6 干姜12 生地12","from":"skill"}],"tag":"血"},{"id":"n81","k":"fang","t":"黄芪建中汤","s":"腹痛、便干、脉沉、面黄、失眠不多梦","use":"腹痛 40%、便干 45%、脉沉、面黄、失眠不多梦","not":"便稀、脉滑不用","comp":[{"n":"黄芪建中汤","c":"黄芪18 桂枝18 生姜18 炙甘草12 芍药36 大枣24 饴糖80","from":"skill"}],"tag":"血（虚劳）"}]},{"id":"n83","k":"info","t":"有肿而不先走黄芪的情况","s":"里实急、按肿加胃胀、气饮为苦","d":"有肿而不先走黄芪族的三种情况：里实急（便干、胃胀、烦躁、腹满），进方阵一用大柴胡汤；按肿加胃胀，进方阵一（芪归柴胡汤、柴胡桂枝枳实汤、芪芍柴胡枳实丸）；气饮为所急所苦（胸闷气短、胃胀、便稀），进方阵七（外台茯苓饮、橘枳姜汤）。〔skill〕"}],"fam":"m2"},{"id":"m3","k":"matrix","t":"方阵三：阳明四法","s":"七行判为实火","d":"先用\"实火、阴火七行\"判断：口渴、大便、寒热、舌、下睑、面、脉逐行比，多数行落哪边就按哪边。落在阴火，用阴火四法（甘、酸、咸、石，各配温或寒），或回方阵一、方阵七。","children":[{"id":"n85","k":"row","t":"辛寒","s":"热在表或冲上焦、恶热、扪手热","d":"热在表或冲上焦：恶热、扪手热、面红、口渴，加表症，脉浮滑数","children":[{"id":"n84","k":"fang","t":"白虎加人参汤","s":"大汗出、大烦渴、脉洪大","use":"大汗出、大烦渴、脉洪大；背微恶寒是热盛津伤，不是表不解"},{"id":"n86","k":"fang","t":"竹叶石膏汤","s":"恶热、潮热、扪手热、盗汗","use":"恶热、潮热、扪手热、盗汗、唇干、脉滑数、虚羸少气；没有下肢肿","comp":[{"n":"竹叶石膏汤","c":"竹叶12 石膏100 人参12 麦冬48 半夏24 炙甘草12 粳米24","from":"skill"}]},{"id":"n87","k":"fang","t":"竹叶石膏栝楼汤","s":"心慌伴潮热汗出、口干苦、盗汗","use":"心慌伴潮热汗出、口干苦、盗汗、胸闷、头晕（便稀不忌）","comp":[{"n":"竹叶石膏栝楼汤","c":"竹叶48 石膏48 栝楼实48 小麦100 生姜30 人参12 茯苓12 知母12 黄芩12 麦冬12 半夏6 炙甘草6","from":"skill"}]},{"id":"n88","k":"fang","t":"竹皮大丸","s":"潮热、情绪、烦乱、入睡难","use":"潮热、情绪、烦乱、入睡难；中虚（哺乳、经期）","comp":[{"n":"竹皮大丸","c":"竹茹12 石膏12 白薇6 桂枝6 生甘草30 大枣30 小麦48","from":"skill"}]},{"id":"n89","k":"fang","t":"葛根芩连汤","s":"热利兼表、里急后重、臭秽","use":"热利兼表：里急后重、臭秽、肛门灼热，喘而汗出"},{"id":"n90","k":"fang","t":"麻杏石甘汤","s":"汗出而喘、无大热、鼻症、恶热","use":"汗出而喘、无大热；鼻症、恶热、脉数、痒疹、尿黄、盗汗","comp":[{"n":"麻杏石甘汤","c":"麻黄24 杏仁24 炙甘草12 石膏48","from":"skill"}]}]},{"id":"n92","k":"row","t":"苦寒（阴旦）","s":"里热燔灼、不兼表、虚、水","d":"里热燔灼，不兼表、虚、水","children":[{"id":"n91","k":"fang","t":"大黄黄连泻心汤","s":"心下痞、按之濡、关上浮、胃胀","use":"心下痞、按之濡、关上浮；胃胀、烧心、口干、口臭、牙龈上火（麻沸汤渍）"},{"id":"n93","k":"fang","t":"泻心汤","s":"吐血、衄血","use":"吐血、衄血（阳明实热伤血）"},{"id":"n94","k":"fang","t":"黄芩汤","s":"口疮、烦躁、便日 2–3 行成形","use":"口疮、烦躁、便日 2–3 行成形、脉滑数；无恶寒","comp":[{"n":"黄芩汤","c":"黄芩18 芍药12 炙甘草12 大枣24","from":"skill"}]},{"id":"n95","k":"fang","t":"黄芩加半夏生姜汤","s":"咽痛咽干咽痒、咳、痰黏、脉滑","use":"咽痛咽干咽痒、咳、痰黏、脉滑、口疮；加呕。咽痛加脉滑，即使乏力恶热也先用它","comp":[{"n":"黄芩加半夏生姜汤","c":"黄芩18 芍药12 炙甘草12 大枣24 生姜9 半夏24","from":"skill"}]},{"id":"n96","k":"fang","t":"黄芩去大枣加栀子厚朴栝楼汤","s":"胸闷、心慌、腹胀、嗳气反酸","use":"胸闷、心慌、腹胀、嗳气反酸、便干、口苦、恶风","comp":[{"n":"黄芩去大枣加栀子厚朴栝楼汤","c":"黄芩18 芍药12 炙甘草12 厚朴12 全栝楼12 栀子12 枳壳12","from":"skill"}]},{"id":"n97","k":"fang","t":"奔豚汤","s":"咽痰滞、肩背、腰酸、胸闷","use":"咽痰滞、肩背、腰酸、胸闷、痒、潮热、头晕、月经少；表寒营弱（手足凉、足踝冷痛）加咽痰、便溏、皮肤痒，不肿；辨为柴胡桂枝汤证而嫌桂枝太热时","comp":[{"n":"奔豚汤","c":"半夏24 葛根30 桑白皮48 当归12 川芎12 甘草12 黄芩12 芍药12 生姜24","from":"skill"}]},{"id":"n98","k":"fang","t":"黄连阿胶汤","s":"火热伤血、心中烦、不得卧","use":"火热伤血：心中烦、不得卧；便血、紫癜"}]},{"id":"n100","k":"row","t":"酸寒","s":"火为所苦而兼虚、兼水、兼表","d":"火为所苦而兼虚、兼水、兼表；旧有微溏不可用","children":[{"id":"n99","k":"fang","t":"栀子豉汤","s":"虚烦不得眠、心中懊憹、胸中窒","use":"虚烦不得眠、心中懊憹、胸中窒、舌上有苔；少气加甘草，呕加生姜"},{"id":"n101","k":"fang","t":"栀子芩芍豉汤","s":"失眠烦躁、恶热、苔黄、舌红","use":"失眠烦躁、恶热、苔黄、舌红","comp":[{"n":"栀子芩芍豉汤","c":"栀子18 黄芩18 芍药18（多用赤芍） 豆豉48","from":"skill"}]},{"id":"n102","k":"fang","t":"枳实栀子豉汤","s":"瘥后劳复、胸闷、烦躁、烧心","use":"瘥后劳复；胸闷、烦躁、烧心、苔厚黄、焦虑","comp":[{"n":"枳实栀子豉汤","c":"栀子12 豆豉48 枳壳36 酸浆水240ml","from":"skill"}]},{"id":"n103","k":"fang","t":"栀子厚朴汤","s":"心烦、腹满、卧起不安","use":"心烦、腹满、卧起不安（火热滞气，未成里结）"},{"id":"n104","k":"fang","t":"栀子大黄汤","s":"火结更重、便干、尿黄灼热","use":"火结更重：便干、尿黄灼热、腹满、烦躁；酒疸懊憹","comp":[{"n":"栀子大黄汤","c":"栀子12 大黄6 枳壳60 豆豉48","from":"skill"}]}]},{"id":"n106","k":"row","t":"咸寒","s":"燥结、血分、水分","d":"燥结、血分、水分","children":[{"id":"n105","k":"fang","t":"调胃承气汤","s":"蒸蒸发热、心烦、以燥为主","use":"蒸蒸发热、心烦，以燥为主"},{"id":"n107","k":"fang","t":"小承气汤","s":"以结为主、腹大满不通、谵语","use":"以结为主：腹大满不通、谵语、脉滑疾（最常用）","comp":[{"n":"小承气汤","c":"厚朴12 枳壳36 大黄24 清酒60","from":"导图"}]},{"id":"n108","k":"fang","t":"大承气汤","s":"燥结俱重、潮热、手足濈然汗出","use":"燥结俱重：潮热、手足濈然汗出、绕脐痛、腹满不减","comp":[{"n":"大承气汤","c":"大黄24 枳壳60 厚朴48 芒硝12 清酒60","from":"skill"}]},{"id":"n109","k":"fang","t":"桃核承气汤","s":"少腹急结、如狂、表不了了","use":"少腹急结、如狂，表不了了；经前或经期的热证","comp":[{"n":"桃核承气汤","c":"桃仁24 大黄24 炙甘草12 桂枝12 芒硝12","from":"skill"}]},{"id":"n110","k":"fang","t":"抵当汤","s":"少腹硬满、小便自利、喜忘","use":"少腹硬满、小便自利、喜忘、发狂（瘀热完全入里）"},{"id":"n111","k":"fang","t":"小陷胸汤","s":"正在心下、按之痛、口苦、胸闷","use":"正在心下、按之痛；口苦、胸闷、嗳气、苔黄腻、脉滑数","comp":[{"n":"小陷胸汤","c":"栝楼实48 半夏24 黄连6","from":"skill"}]},{"id":"n112","k":"fang","t":"大陷胸汤","s":"从心下至少腹硬满而痛不可近","use":"从心下至少腹硬满而痛不可近（水热结胸）"},{"id":"n113","k":"fang","t":"己椒苈黄丸","s":"腹满、口舌干燥、肠间水气","use":"腹满、口舌干燥、肠间水气","comp":[{"n":"己椒苈黄丸","c":"防己12 椒目12 葶苈子12 大黄12 蜂蜜12（渴加芒硝12）","from":"skill"}]}]},{"id":"n115","k":"row","t":"甘寒","s":"阳明兼胃津虚","d":"阳明兼胃津虚","children":[{"id":"n114","k":"fang","t":"麦门冬汤","s":"火逆上气、咽喉不利、咽干痰黏咯不出","use":"火逆上气、咽喉不利、咽干痰黏咯不出，整体偏虚","comp":[{"n":"麦门冬汤","c":"麦冬300 半夏48 人参18 炙甘草12 大枣24 粳米18","from":"skill"}]}]},{"id":"n117","k":"row","t":"阴火（石、甘）","s":"表寒加里热入血","d":"表寒加里热入血","children":[{"id":"n116","k":"fang","t":"桂甘寒石芩芍地黄汤","s":"扪手凉、恶寒、加晨起口干","use":"扪手凉、恶寒，加晨起口干、尿黄、脉数、下肢干燥","comp":[{"n":"桂甘寒石芩芍地黄汤","c":"桂枝12 炙甘草12 寒水石12 黄芩12 芍药12 生地12","from":"skill"}]}]}],"fam":"m3"},{"id":"m4","k":"matrix","t":"方阵四：泻心·乌梅","s":"胃虚＋寒热错杂，缺邪气交争","d":"类厥阴本病：有胃虚、寒热错杂，但缺了邪气交争（往来寒热）〔伤〕。\n上热（口干苦、头面疮）加下寒（腹凉、受凉泻）才走泻心；没有上热的腹泻用桂枝人参汤〔skill〕。","children":[{"id":"n118","k":"fang","t":"黄连汤","s":"半表里偏表｜胸中有热、胃中有邪气、腹痛","use":"胸中有热、胃中有邪气、腹痛、欲呕，有明显表寒（手足凉、恶寒、恶风汗出）","not":"表寒不明显，移生姜泻心汤","tag":"半表里偏表"},{"id":"n119","k":"fang","t":"生姜泻心汤","s":"表不了了｜胃痛、腹痛、腹凉、受凉泻","use":"胃痛、腹痛、腹凉、受凉泻、口干苦、尿黄、干噫食臭、雷鸣下利；表不了了（痒、疹、寒热异常、眠差）；恶寒加受凉易泻是里饮冲表，不当表寒；头面疮也算上热","not":"口干苦与疮都去了才不守，转前胡法或温经汤","comp":[{"n":"生姜泻心汤","c":"半夏24 干姜6 炙甘草18 黄芩18 黄连6 人参18 大枣24 生姜24","from":"skill"}],"tag":"表不了了"},{"id":"n120","k":"fang","t":"外台六物黄芩汤","s":"表更明显｜口干、便稀、受凉泻、恶风","use":"口干 86%、便稀 71%、受凉泻、恶风、扪手凉","not":"以疲劳、情绪为主不用","comp":[{"n":"外台六物黄芩汤","c":"黄芩12 干姜12 人参12 大枣24 桂枝6 半夏24","from":"skill"}],"tag":"表更明显"},{"id":"n121","k":"fang","t":"半夏泻心汤","s":"里｜上呕、下利、中痞、咽痰滞","use":"上呕、下利、中痞；咽痰滞、嗳气、恶心、口苦、脉滑、心下痞","not":"没有上热不用泻心","comp":[{"n":"半夏泻心汤","c":"半夏24 干姜18 炙甘草18 黄芩18 黄连6 人参18 大枣24","from":"skill"}],"tag":"里"},{"id":"n122","k":"fang","t":"甘草泻心汤","s":"里虚寒为核心｜下利日数十行、谷不化","use":"下利日数十行、谷不化、心烦不得安；口疮加失眠而便偶稀，用生甘草泻心汤","not":"—","comp":[{"n":"甘草泻心汤","c":"半夏24 干姜18 炙甘草24 黄芩18 黄连6 人参18 大枣24（口疮为主用生甘草）","from":"skill"}],"tag":"里虚寒为核心"},{"id":"n123","k":"fang","t":"百合泻心汤","s":"里，兼失眠｜腹泻加失眠多梦、烦躁、疲劳","use":"腹泻加失眠多梦、烦躁、疲劳","not":"—","comp":[{"n":"百合泻心汤","c":"百合9 生姜12 半夏12 干姜3 黄芩9 黄连3 人参9 大枣12 炙甘草9","from":"skill"}],"tag":"里，兼失眠"},{"id":"n124","k":"fang","t":"干姜芩连人参汤","s":"半寒热｜本自寒下、又被吐下","use":"本自寒下，又被吐下，食入口即吐","not":"—","tag":"半寒热"},{"id":"n125","k":"fang","t":"乌梅丸","s":"寒热错杂较重｜蛔厥、久利、静而复时烦、消渴","use":"蛔厥、久利；静而复时烦、消渴、心中疼热、饥不欲食、手足厥冷","not":"以表为苦，移方阵一","comp":[{"n":"乌梅丸","c":"乌梅30 炮附子3 桂枝3 人参3 当归3 细辛3 干姜6 蜀椒3 黄柏3 黄连9 苦酒60 粳米48 蜂蜜12","from":"skill"}],"tag":"寒热错杂较重"},{"id":"n126","k":"fang","t":"麻黄升麻汤","s":"太阳传厥阴中风｜大下后、手足厥逆、喉咽不利","use":"大下后，手足厥逆（手肘以上温），喉咽不利、唾脓血、泄利不止","not":"—","tag":"太阳传厥阴中风"},{"id":"n127","k":"fang","t":"桂枝人参汤","s":"无上热的腹泻｜太阴里虚寒下利兼表、恶寒","use":"太阴里虚寒下利兼表，恶寒","not":"有上热，移泻心","comp":[{"n":"桂枝人参汤","c":"桂枝24 干姜18 炙甘草24 人参18 白术18","from":"skill"}],"tag":"无上热的腹泻"}],"fam":"m4"},{"id":"m5","k":"matrix","t":"方阵五：太阳","s":"以表为苦：先分有汗、无汗","d":"先定表药：麻黄要表实（无汗、鼻塞、咳、风团、按肿而表闭）；桂枝管表虚（汗出、营弱）。石膏、葛根管阳明表热，转方阵六；前胡管厥阴之表，转方阵一。","children":[{"id":"n129","k":"row","t":"桂枝类：中风，有汗","s":"桂枝汤、桂枝加葛根汤、桂枝加厚朴杏子汤、桂枝加…","children":[{"id":"n128","k":"fang","t":"桂枝汤","s":"中风（汗出恶风）｜汗出加恶风即可打底","use":"汗出加恶风即可打底；太阴病脉浮、太阴中风四肢烦疼","not":"酒客、里热（脏有他病）不用；小便数（太阴外证）不用","tag":"中风（汗出恶风）"},{"id":"n130","k":"fang","t":"桂枝加葛根汤","s":"中风兼津亏｜项背强几几、汗出恶风、扪手凉","use":"项背强几几、汗出恶风、扪手凉、颈肩僵","not":"下肢肿不用；口干、心烦、便干，移栝蒌桂枝汤","comp":[{"n":"桂枝加葛根汤","c":"桂枝12 生姜18 炙甘草12 芍药12 大枣24 葛根24","from":"skill"}],"tag":"中风兼津亏"},{"id":"n131","k":"fang","t":"桂枝加厚朴杏子汤","s":"中风兼气逆｜喘家、下后微喘、寒型鼻症或咳","use":"喘家、下后微喘；寒型鼻症或咳、汗多、扪手凉、舌淡；清热后热退的咳","not":"下肢肿、脉滑不用","comp":[{"n":"桂枝加厚朴杏子汤","c":"桂枝18 生姜18 炙甘草12 芍药18 大枣24 杏仁18 厚朴12","from":"skill"}],"tag":"中风兼气逆"},{"id":"n132","k":"fang","t":"桂枝加桂汤","s":"中风兼饮冲｜奔豚、慢性咳嗽、过敏性咽炎","use":"奔豚；慢性咳嗽、过敏性咽炎：咽痒即咳、手足凉、无胸闷腹满","not":"有胸闷腹满，移桂枝加厚朴杏子汤","tag":"中风兼饮冲"}]},{"id":"n134","k":"row","t":"麻黄类：伤寒，表实","s":"麻黄汤、葛根汤、葛根加半夏汤、大青龙汤、小青龙…","children":[{"id":"n133","k":"fang","t":"麻黄汤","s":"伤寒｜无汗而喘、身痛、腰痛、骨节痛","use":"无汗而喘、身痛、腰痛、骨节痛、脉浮紧","not":"津亏水燥、汗家、血虚手足痹不用","comp":[{"n":"麻黄汤","c":"麻黄18 桂枝12 杏仁24 炒甘草6","from":"导图"}],"tag":"伤寒"},{"id":"n135","k":"fang","t":"葛根汤","s":"伤寒兼火｜项背强、无汗、恶风","use":"项背强、无汗、恶风；已用过发汗药、口微干、尿微黄","not":"火再重，去桂加石膏（麻杏石甘汤）","comp":[{"n":"葛根汤","c":"葛根24 麻黄18 桂枝12 白芍药12 炒甘草12 生姜18 大枣24","from":"导图"}],"tag":"伤寒兼火"},{"id":"n136","k":"fang","t":"葛根加半夏汤","s":"伤寒兼火、饮逆｜外感首诊或新感 1–3 日","use":"外感首诊或新感 1–3 日：恶寒、咳、咽痰滞、鼻塞、恶心、身痛","not":"兼热（饮多不解渴、黄痰、脉数）又有胃胀，移橘皮麻黄汤","comp":[{"n":"葛根加半夏汤","c":"葛根24 麻黄18 桂枝12 芍药12 炙甘草12 生姜18 大枣24 半夏24","from":"skill"}],"tag":"伤寒兼火、饮逆"},{"id":"n137","k":"fang","t":"大青龙汤","s":"伤寒兼溢饮｜不汗出而烦躁、身重、乍有轻时","use":"不汗出而烦躁、身重、乍有轻时","not":"脉微弱、汗出恶风禁用","tag":"伤寒兼溢饮"},{"id":"n138","k":"fang","t":"小青龙汤","s":"伤寒兼支饮｜心下有水气、咳、恶寒、清涕","use":"心下有水气、咳、恶寒、清涕、便稀、腹凉、苔润","not":"下肢干燥、脉滑不用；饮郁化热、烦躁，加石膏","comp":[{"n":"小青龙汤","c":"麻黄18 芍药18 桂枝18 细辛18 干姜18 炙甘草18 五味子24 半夏24","from":"skill"}],"tag":"伤寒兼支饮"},{"id":"n139","k":"fang","t":"桂枝二麻黄一汤、桂枝麻黄各半汤、桂枝二越婢一汤","s":"表郁轻证｜八九日如疟、热多寒少、身痒","use":"八九日如疟、热多寒少、身痒；面有热色用桂麻各半；脉微用桂二越一","not":"—","tag":"表郁轻证"}]},{"id":"n141","k":"row","t":"咳喘与新感","s":"射干麻黄汤、厚朴麻黄去干姜细辛加生姜汤、橘皮麻…","children":[{"id":"n140","k":"fang","t":"射干麻黄汤","s":"咳喘外寒内饮｜咳、咽痒、喉中痰鸣、痰难咯","use":"咳 100%、咽痒、喉中痰鸣、痰难咯","not":"不咳不用","comp":[{"n":"射干麻黄汤","c":"射干18 麻黄24 细辛18 五味子24 紫菀18 款冬花18 半夏24 大枣20 生姜24","from":"skill"}],"tag":"咳喘外寒内饮"},{"id":"n142","k":"fang","t":"厚朴麻黄去干姜细辛加生姜汤","s":"咳喘寒热错杂｜咳、鼻症、脉浮、咽痰滞","use":"咳 90%、鼻症 86%、脉浮、咽痰滞；表寒兼热","not":"不咳，移阴旦解肌汤；咳而无鼻症、无热、汗多，移桂枝加厚朴杏子汤","comp":[{"n":"厚朴麻黄去干姜细辛加生姜汤","c":"厚朴18 麻黄12 杏仁12 石膏24 生姜12 五味子12 小麦48 半夏12","from":"skill"}],"tag":"咳喘寒热错杂"},{"id":"n143","k":"fang","t":"橘皮麻黄汤","s":"新感兼热兼胃｜胃胀、嗳气反酸、按肿、鼻塞","use":"胃胀 80%、嗳气反酸、按肿、鼻塞；新感兼热","not":"痒少见","comp":[{"n":"橘皮麻黄汤","c":"橘皮18 麻黄18 杏仁24 石膏48 生姜24 苏叶18 柴胡18","from":"skill"}],"tag":"新感兼热兼胃"}]},{"id":"n145","k":"row","t":"风水：按肿","s":"越婢加术汤、麻黄泄黄汤、竹叶麻黄汤","children":[{"id":"n144","k":"fang","t":"越婢加术汤","s":"风水｜下肢肿、恶热、恶风、易汗","use":"下肢肿、恶热、恶风、易汗、鼻塞清涕","not":"睑白少见；偏虚者移方阵二（防己黄芪汤）","comp":[{"n":"越婢加术汤","c":"麻黄36 石膏48 甘草12 生姜18 大枣30 白术24","from":"skill"}],"tag":"风水"},{"id":"n146","k":"fang","t":"麻黄泄黄汤","s":"风水偏热｜明显按肿、风团、恶热、尿黄","use":"明显按肿、风团、恶热、尿黄、苔黄、头胀、高血压","not":"—","comp":[{"n":"麻黄泄黄汤","c":"麻黄18 葛根30 石膏48 生姜36 茵陈12","from":"skill"}],"tag":"风水偏热"},{"id":"n147","k":"fang","t":"竹叶麻黄汤","s":"风水而干燥｜按肿而干燥、便干、湿疹、膝","use":"按肿而干燥、便干、湿疹、膝","not":"恶寒、口干少见","comp":[{"n":"竹叶麻黄汤","c":"竹叶48 麻黄18 生地48 石膏48 小麦48 麦冬48 生姜36 甘草12 大枣20","from":"skill"}],"tag":"风水而干燥"}]},{"id":"n149","k":"row","t":"类中风：续命","s":"小续命汤、古今录验续命汤","children":[{"id":"n148","k":"fang","t":"小续命汤、古今录验续命汤","s":"中风（类中风）｜麻木、受风流涕头痛、喷嚏","use":"麻木、受风流涕头痛；喷嚏、耳鸣、腹冷便稀、舌淡","not":"咳者少用","comp":[{"n":"小续命汤","c":"麻黄6 桂枝6 杏仁6 炙甘草6 生姜30 川芎6 防己6 防风6 黄芩6 芍药6 人参6 炮附子6","from":"skill"},{"n":"古今录验续命汤","c":"麻黄18 桂枝18 杏仁18 炙甘草18 石膏18 当归18 川芎6 人参18 干姜18","from":"skill"}],"tag":"中风（类中风）"}]}],"fam":"m5"},{"id":"m6","k":"matrix","t":"方阵六：表解肌·辛寒血痹","s":"阳明表热：皮肤、鼻","d":"阳明表热、阳明血痹。皮肤病、鼻症热象 2–3 项，多从这里选〔skill〕。\n解肌＝存津液而发汗：芍药（虚热）、石膏（实热）、葛根（虚实兼清、偏津亏）、知母（水热）。麻黄多于石膏偏表寒水多；麻黄少于石膏是风水以热为主，麻黄配石膏反而止汗〔skill〕。","children":[{"id":"n151","k":"row","t":"表解肌","s":"栝蒌桂枝汤、阴旦解肌汤、百合前胡汤、葛根八物解…","children":[{"id":"n150","k":"fang","t":"栝蒌桂枝汤","s":"痉（太阳阳明）｜太阳证备、身体强几几、脉沉迟","use":"太阳证备，身体强几几，脉沉迟；口干、心烦、面赤、便偏干","not":"表重而便稀，移桂枝加葛根汤","comp":[{"n":"栝蒌桂枝汤","c":"桂枝18 生姜18 炒甘草12 白芍药18 大枣24 天花粉12","from":"导图"}],"tag":"痉（太阳阳明）"},{"id":"n152","k":"fang","t":"阴旦解肌汤","s":"阴旦解肌｜鼻症、喷嚏、咽痒、风团、便干","use":"鼻症 68%、喷嚏、咽痒、风团、便干、脉浮滑；胃胀少见","not":"津燥（口咽目干、下肢干燥），移百合前胡汤；以咳为主，移厚朴麻黄去干姜细辛加生姜汤","comp":[{"n":"阴旦解肌汤","c":"麻黄6 葛根24 黄芩12 芍药12 甘草12 大枣24","from":"skill"}],"tag":"阴旦解肌"},{"id":"n153","k":"fang","t":"百合前胡汤","s":"阴旦解肌＋津燥｜鼻症、下肢干燥、口咽目干","use":"鼻症、下肢干燥 64%、口咽目干、按肿、便干、尿黄、多梦","not":"无津燥，移阴旦解肌汤；不可加茯苓","comp":[{"n":"百合前胡汤","c":"百合30 前胡9 麻黄9 葛根12 石膏18 麦冬24","from":"skill"}],"tag":"阴旦解肌＋津燥"},{"id":"n154","k":"fang","t":"葛根八物解肌汤","s":"阳明表热｜脉滑、扪手热、恶热、痤疮","use":"脉滑 89%、扪手热、恶热、痤疮、颈肩僵、下肢干燥、口干饮不解渴、入睡难","not":"有咳、鼻症不用","comp":[{"n":"葛根八物解肌汤","c":"葛根24 芍药24 升麻24 生甘草12 百合12 石膏48 栀子12 土贝母12","from":"skill"}],"tag":"阳明表热"},{"id":"n155","k":"fang","t":"芍药四物解肌汤","s":"阳明表热偏血｜痒、麻木、舌裂、血络","use":"痒 67%、麻木、舌裂、血络、脉浮滑数；红疹、恶热汗多、按肿而口不干","not":"恶寒、咳不用；口干饮不解渴，移葛根八物解肌汤","comp":[{"n":"芍药四物解肌汤","c":"芍药24 升麻24 葛根24 黄芩24","from":"skill"}],"tag":"阳明表热偏血"},{"id":"n156","k":"fang","t":"百痛壮热方","s":"阳明表热偏实｜口干、恶热、汗多、苔厚黄","use":"口干、恶热、汗多、苔厚黄、胃胀、痤疮、烦躁","not":"下肢干燥、脉浮少见","comp":[{"n":"百痛壮热方","c":"豆豉48 石膏48 芍药24 柴胡24 知母24 栀子24 黄芩18 升麻18 杏仁18 大青叶18","from":"skill"}],"tag":"阳明表热偏实"},{"id":"n157","k":"fang","t":"麻栀甘石升芩汤","s":"鼻症加上焦实火｜鼻症加牙龈肿痛、口疮、唇疱疹","use":"鼻症（喷嚏、鼻塞、浓涕）加牙龈肿痛、口疮、唇疱疹、黄痰；舌红、睑红、脉滑","not":"无鼻症，移葛根八物解肌汤","tag":"鼻症加上焦实火"},{"id":"n158","k":"fang","t":"葛根柴胡汤","s":"少阳阳明表热｜潮热、情绪、入睡难、肩颈","use":"潮热、情绪、入睡难、肩颈、扪手热、脉滑数","not":"下肢肿、咳、脉浮不用","comp":[{"n":"葛根柴胡汤","c":"葛根24 柴胡24 芍药24 炙甘草12 黄芩24 石膏48","from":"skill"}],"tag":"少阳阳明表热"},{"id":"n159","k":"fang","t":"石膏柴胡汤","s":"外感胃虚火证｜外感发热、胃虚火证、恶心","use":"外感发热、胃虚火证、恶心、胸闷、咽痛、四肢凉","not":"—","comp":[{"n":"石膏柴胡汤","c":"石膏48 柴胡24 升麻18 生姜18 葛根48 芍药24 竹茹48 杏仁18","from":"skill"}],"tag":"外感胃虚火证"},{"id":"n160","k":"fang","t":"石发烦渴葛根汤","s":"新出按肿而无太阴底子｜新出按肿而没有疲劳、易汗","use":"新出按肿而没有疲劳、易汗、恶风、睑白；腹满、口唇疱疹、睑红","not":"有太阴中风底子，移方阵二","comp":[{"n":"石发烦渴葛根汤","c":"石膏18 茯苓18 枳壳18 葛根18","from":"skill"}],"tag":"新出按肿而无太阴底子"}]},{"id":"n162","k":"row","t":"辛寒血痹：痈脓、阴阳毒","s":"桔梗汤；排脓汤或排脓散、大黄牡丹汤、升麻鳖甲汤","children":[{"id":"n161","k":"fang","t":"桔梗汤；排脓汤或排脓散","s":"桔梗法｜咽痛、肺痈、痈脓","use":"咽痛；肺痈（脉数、咽干不渴、浊唾腥臭）；痈脓","not":"—","tag":"桔梗法"},{"id":"n163","k":"fang","t":"大黄牡丹汤","s":"丹皮法｜肠痈、里位痈脓、癥瘕","use":"肠痈；里位痈脓、癥瘕","not":"—","tag":"丹皮法"},{"id":"n164","k":"fang","t":"升麻鳖甲汤","s":"升麻法｜阴阳毒、发斑、咽痛","use":"阴阳毒：发斑、咽痛、身痛如被杖；顽固皮肤病","not":"〔痹〕考证：阳毒去雄黄、蜀椒，阴毒用原方（〔金〕按宋本相反）","src":["痹","金"],"tag":"升麻法"}]}],"fam":"m6"},{"id":"m7","k":"matrix","t":"方阵七：太阴温之四法·水饮","s":"里虚寒、水饮、胃气","d":"太阴里证：虚寒、水饮、胃气。温之四法以甘草干姜汤打底：温补（理中，偏虚）、温化（四逆，偏寒）、温渗（真武、肾著，偏饮）、温涩（桃花汤、黄土汤，下焦亡血）〔伤〕〔金〕。\n胃虚为所苦先补胃〔skill〕。","children":[{"id":"n166","k":"row","t":"温补（偏虚）","s":"理中丸","children":[{"id":"n165","k":"fang","t":"理中丸（人参汤）","s":"喜唾、胸上有寒、寒多不欲饮水的吐利","use":"喜唾、胸上有寒；寒多不欲饮水的吐利；胸痹缓解期治本","not":"—","comp":[{"n":"理中丸","c":"干姜18 炒甘草18 人参18 白术18 蜂蜜12","from":"导图"}]}]},{"id":"n168","k":"row","t":"温化（偏寒）","s":"四逆汤、附子粳米汤、大建中汤、大黄附子汤","children":[{"id":"n167","k":"fang","t":"四逆汤","s":"下利清谷、脉沉、先温里、后攻表","use":"下利清谷、脉沉；先温里，后攻表","not":"—"},{"id":"n169","k":"fang","t":"附子粳米汤","s":"腹中寒气、雷鸣切痛、胸胁逆满","use":"腹中寒气，雷鸣切痛，胸胁逆满，呕吐","not":"—"},{"id":"n170","k":"fang","t":"大建中汤","s":"心胸中大寒痛、呕不能食、寒痛为主而有口干","use":"心胸中大寒痛、呕不能食；寒痛为主而有口干、便干","not":"肠鸣下利，回理中","comp":[{"n":"大建中汤","c":"人参12 蜀椒12 干姜24 饴糖80","from":"skill"}]},{"id":"n171","k":"fang","t":"大黄附子汤","s":"胁下偏痛、发热、脉紧弦","use":"胁下偏痛、发热、脉紧弦（寒实，温下）","not":"—"}]},{"id":"n173","k":"row","t":"温渗（偏饮）","s":"真武汤、甘姜苓术汤、苓桂术甘汤、苓桂味甘汤、苓…","children":[{"id":"n172","k":"fang","t":"真武汤","s":"头晕、心悸、耳鸣、恶寒、尿频夜尿","use":"头晕、心悸、耳鸣、恶寒、尿频夜尿、肠鸣便溏、腹痛、月经后期、高血压；水血同病","not":"有火象（烦躁、烧心、恶热、苔黄）不用","comp":[{"n":"真武汤","c":"炮附子6 芍药18 茯苓18 白术12 生姜18","from":"skill"}]},{"id":"n174","k":"fang","t":"甘姜苓术汤","s":"腰以下冷痛重、如坐水中、反不渴","use":"腰以下冷痛重、如坐水中、反不渴、小便自利","not":"—"},{"id":"n175","k":"fang","t":"苓桂术甘汤","s":"心下逆满、气上冲胸、起则头眩","use":"心下逆满、气上冲胸、起则头眩；短气有微饮","not":"兼津血亏，移肾气丸"},{"id":"n176","k":"fang","t":"苓桂味甘汤","s":"心慌为单一主诉、胸闷、舌裂","use":"心慌为单一主诉、胸闷、舌裂、面热；兼虚热、手足痹","not":"—","comp":[{"n":"苓桂味甘汤","c":"茯苓24 桂枝24 炙甘草18 五味子24","from":"skill"}]},{"id":"n177","k":"fang","t":"苓桂枣甘汤","s":"脐下悸、欲作奔豚、兼血虚","use":"脐下悸、欲作奔豚；兼血虚（经少、睑白）","not":"—"},{"id":"n178","k":"fang","t":"茯苓甘草汤","s":"厥而心下悸、不渴","use":"厥而心下悸、不渴（水寒）","not":"—"},{"id":"n179","k":"fang","t":"五苓散","s":"小便不利、微热、消渴、脉浮","use":"小便不利、微热、消渴、脉浮（水热兼表）；癫眩","not":"热重伤血而无表，移猪苓汤","comp":[{"n":"五苓散","c":"猪苓12 茯苓12 泽泻24 白术12 桂枝3 小麦24","from":"skill"}]},{"id":"n180","k":"fang","t":"肾气丸","s":"夜尿、腰酸、下肢干燥、睑白","use":"夜尿、腰酸、下肢干燥、睑白、欠畅；饮一溲一、小便反多","not":"—","comp":[{"n":"肾气丸","c":"生地48 山茱萸24 山药24 泽泻18 茯苓18 丹皮18 桂枝6 炮附子6 清酒60 蜂蜜12","from":"skill"}]},{"id":"n181","k":"fang","t":"泽泻汤","s":"心下支饮、苦冒眩","use":"心下支饮、苦冒眩","not":"—"},{"id":"n182","k":"fang","t":"小半夏汤（加茯苓）","s":"呕而不渴、卒呕吐、心下痞","use":"呕而不渴；卒呕吐、心下痞、眩悸","not":"—"},{"id":"n183","k":"fang","t":"外台茯苓饮","s":"便稀、腹凉、齿痕、头晕、纳差","use":"便稀 70%、腹凉、齿痕、头晕、纳差、胃胀、胸闷短气；无口干苦","not":"脉滑、有热不用","comp":[{"n":"外台茯苓饮","c":"茯苓18 白术18 人参18 橘皮15 枳壳12 生姜24","from":"skill"}]},{"id":"n184","k":"fang","t":"外台桂枝茯苓汤","s":"头晕心慌胸闷、加口苦口干","use":"头晕心慌胸闷，加口苦口干、苔黄腻、脉滑数、肠鸣便软；不恶风寒","not":"有恶风寒，移前胡苓桂术甘汤","comp":[{"n":"外台桂枝茯苓汤","c":"桂枝6 茯苓18 人参6 炙甘草6 黄芩6 天花粉6 枳壳6 白术6","from":"skill"}]},{"id":"n185","k":"fang","t":"深师复脉汤","s":"心慌、胸闷、头晕、气短四项占三项","use":"心慌、胸闷、头晕、气短四项占三项；扪手凉、麻木、多梦惊醒","not":"口干饮多、苔腻水滑、便稀，移外台桂枝茯苓汤","comp":[{"n":"深师复脉汤","c":"桂枝18 炙甘草12 生姜18 茯苓18 白术18 枳壳18 栝楼实18 细辛12 生地12 清酒60","from":"skill"}]},{"id":"n186","k":"fang","t":"木防己汤；木防己去石膏加茯苓芒硝汤","s":"膈间支饮、喘满、心下痞坚","use":"膈间支饮：喘满、心下痞坚、面色黧黑、脉沉紧；苔黄腻、便干者用后方","not":"—"}]},{"id":"n188","k":"row","t":"温涩（下焦亡血）","s":"桃花汤、赤石脂禹余粮汤、黄土汤","children":[{"id":"n187","k":"fang","t":"桃花汤、赤石脂禹余粮汤、黄土汤","s":"下利便脓血、利在下焦、远血","use":"下利便脓血、利在下焦；远血（先便后血）","not":"—"}]},{"id":"n190","k":"row","t":"胃气（气证）","s":"厚姜半甘人参桂枝汤、橘枳姜汤、枳实薤白桂枝汤、…","children":[{"id":"n189","k":"fang","t":"厚姜半甘人参桂枝汤","s":"胃胀、腹胀、嗳气、齿痕、扪手凉","use":"胃胀 67%、腹胀、嗳气、齿痕、扪手凉","not":"食冷泻、疲劳少见","comp":[{"n":"厚姜半甘人参桂枝汤","c":"厚朴48 生姜48 半夏24 炙甘草12 人参6 桂枝18 黄芩12 茯苓24 枳壳60","from":"skill"}]},{"id":"n191","k":"fang","t":"橘枳姜汤","s":"嗳气、胸痹短气、脉滑、口苦","use":"嗳气 73%、胸痹短气、脉滑、口苦","not":"便稀少见","comp":[{"n":"橘枳姜汤","c":"橘皮100 枳壳36 生姜48","from":"skill"}]},{"id":"n192","k":"fang","t":"枳实薤白桂枝汤","s":"胸闷、气短、欠畅便干、恶风","use":"胸闷 71%、气短、欠畅便干、恶风、腹胀","not":"便稀少见","comp":[{"n":"枳实薤白桂枝汤","c":"栝楼实48 枳壳48 薤白48 桂枝6 厚朴24","from":"skill"}]},{"id":"n193","k":"fang","t":"橘皮竹茹汤类","s":"嗳气、胃胀、纳欠佳、睑半白","use":"嗳气、胃胀、纳欠佳、睑半白、轻度虚热；嗳气加便溏用橘皮竹茹厚朴汤；胃胀嗳气、疲劳、齿痕、夜尿、口苦咽干用外台橘皮竹茹汤","not":"—","comp":[{"n":"橘皮竹茹汤类","c":"橘皮100 竹茹48 生姜48 大枣60 甘草30 人参6","from":"skill"}]},{"id":"n194","k":"fang","t":"温胆汤","s":"咽痰滞、口苦、脉滑、便溏","use":"咽痰滞 62%、口苦、脉滑、便溏、心慌头晕","not":"嗳气胃胀少见；管不到表","comp":[{"n":"温胆汤","c":"半夏12 竹茹12 枳壳12 橘皮18 生姜24 甘草6（千金：各二两、橘皮三两、生姜四两、甘草一两）","from":"skill"}]}]}],"fam":"m7"},{"id":"m8","k":"matrix","t":"方阵八：建中·血","s":"太阴伤血、虚劳，无肿无热","d":"太阴伤血、虚劳。无肿时：汗出恶风或疲劳加血少 → 新加归地汤、桂枝新加汤；口干便干加腹凉 → 小建中汤〔skill〕。\n建中必用饴糖，里实里热、苔腻有饮不可〔skill〕。复脉法的核心是去芍药：脉很细时不可再用芍药苦泄〔导〕。","children":[{"id":"n196","k":"row","t":"建中","s":"小建中汤、黄芪建中汤、前胡建中汤","children":[{"id":"n195","k":"fang","t":"小建中汤","s":"建中基础｜虚劳里急、悸、衄、腹痛","use":"虚劳里急、悸、衄、腹痛、梦失精、四肢酸疼、手足烦热、咽干口燥；口干便干加腹凉","not":"呕家不可；便稀（腹痛下利）回理中","comp":[{"n":"小建中汤","c":"桂枝18 生姜18 炙甘草12 芍药36 大枣24 饴糖80","from":"skill"}],"tag":"建中基础"},{"id":"n197","k":"fang","t":"黄芪建中汤","s":"建中＋表虚水｜更虚、神疲、易汗、水肿","use":"更虚：神疲、易汗、水肿、湿疹瘙痒","not":"便稀、脉滑不用","comp":[{"n":"黄芪建中汤","c":"黄芪18 桂枝18 生姜18 炙甘草12 芍药36 大枣24 饴糖80","from":"skill"}],"tag":"建中＋表虚水"},{"id":"n198","k":"fang","t":"前胡建中汤","s":"建中＋饮逆｜见方阵一前胡法血格","use":"见方阵一前胡法血格","not":"—","comp":[{"n":"前胡建中汤","c":"前胡24 半夏12 人参9 炙甘草9 生姜15 大枣24 桂枝9 芍药12 黄芪12 当归12 饴糖40 茯苓12（讲稿另一版 前胡12 生姜48 饴糖80，余各12）","from":"skill"}],"tag":"建中＋饮逆"}]},{"id":"n200","k":"row","t":"营血虚：阳旦养营","s":"桂枝新加汤、新加归地汤、当归四逆汤","children":[{"id":"n199","k":"fang","t":"桂枝新加汤","s":"营血虚身痛｜身痛、扪手凉、下肢干燥","use":"身痛、扪手凉、下肢干燥、入睡难、脉沉迟","not":"—","comp":[{"n":"桂枝新加汤","c":"桂枝18 生姜24 炙甘草12 芍药24 大枣24 人参18","from":"skill"}],"tag":"营血虚身痛"},{"id":"n201","k":"fang","t":"新加归地汤","s":"营血虚、失眠情志｜情绪、多梦、入睡难、扪手凉","use":"情绪、多梦、入睡难、扪手凉、血块、头晕；无肿无热","not":"便稀少见","comp":[{"n":"新加归地汤","c":"桂枝6 芍药6 甘草6 生姜6 大枣40 人参6 当归9 生地6","from":"skill"}],"tag":"营血虚、失眠情志"},{"id":"n202","k":"fang","t":"当归四逆汤","s":"血虚寒厥｜扪手凉、头痛、经少、手足厥寒","use":"扪手凉、头痛、经少、手足厥寒、脉细","not":"腹凉、便稀不用；内有久寒（呕、头晕、经期冷汗、血块），加吴茱萸、生姜","comp":[{"n":"当归四逆汤","c":"当归18 桂枝18 芍药18 细辛18 炙甘草12 木通12 大枣50","from":"skill"}],"tag":"血虚寒厥"}]},{"id":"n204","k":"row","t":"月经与水血","s":"温经汤、胶艾汤、当归芍药散、当归散；当归竹茹汤","children":[{"id":"n203","k":"fang","t":"温经汤","s":"血虚兼虚热、水饮｜口干、便稀、经期腹泻、痛经","use":"口干 91%、便稀 73%、经期腹泻、痛经、血块、腹凉、唇干手热","not":"便干、口不干不排第一；月经只是例行记录时不用","comp":[{"n":"温经汤","c":"吴茱萸18 生姜12 半夏24 桂枝12 芍药12 当归12 川芎12 人参12 甘草12 阿胶12 麦冬48 丹皮12","from":"skill"}],"tag":"血虚兼虚热、水饮"},{"id":"n205","k":"fang","t":"胶艾汤","s":"量多淋漓｜月经量多淋漓、血块、扪手凉","use":"月经量多淋漓、血块、扪手凉、下肢不肿","not":"—","comp":[{"n":"胶艾汤","c":"当归18 川芎12 芍药24 生地36 阿胶12 艾叶18 甘草12 清酒180ml","from":"skill"}],"tag":"量多淋漓"},{"id":"n206","k":"fang","t":"当归芍药散","s":"水盛血亏｜腹中绞痛、诸疾痛、水血同病","use":"腹中绞痛、诸疾痛，水血同病","not":"—","comp":[{"n":"当归芍药散","c":"当归12 川芎12 芍药24 茯苓12 白术12 泽泻24 清酒60","from":"skill"}],"tag":"水盛血亏"},{"id":"n207","k":"fang","t":"当归散；当归竹茹汤","s":"归芎芩芍｜有饮用当归散、里热无饮","use":"有饮（肠鸣、齿痕、易泻）用当归散；里热无饮（扪手热、恶热）、经前痤疮用当归竹茹汤","not":"—","comp":[{"n":"当归散","c":"当归12 芍药12 川芎12 黄芩12 白术6 清酒60","from":"skill"},{"n":"当归竹茹汤","c":"当归12 川芎12 黄芩12 芍药12 生甘草12 竹茹48","from":"skill"}],"tag":"归芎芩芍"}]},{"id":"n209","k":"row","t":"复脉法：去芍药","s":"深师复脉汤、深师复脉去细辛加大枣汤、炙甘草汤","children":[{"id":"n208","k":"fang","t":"深师复脉汤","s":"复脉·虚实夹杂｜脉细欲绝加伤精、又有表寒","use":"脉细欲绝加伤精，又有表寒、水饮、里燥里结；津血亏虚不算重","not":"水饮未尽而伤营（睡眠）显，移深师复脉去细辛加大枣汤；水饮除净，移炙甘草汤（常用 1/2 量）","src":["导"],"comp":[{"n":"深师复脉汤","c":"桂枝18 炙甘草12 生姜18 茯苓18 白术18 枳壳18 栝楼实18 细辛12 生地12 清酒60","from":"skill"}],"tag":"复脉·虚实夹杂"},{"id":"n210","k":"fang","t":"深师复脉去细辛加大枣汤","s":"复脉·过渡｜水饮未尽、里寒已减、伤营显","use":"水饮未尽，里寒已减，伤营显","not":"水饮除净，移炙甘草汤","src":["导"],"tag":"复脉·过渡"},{"id":"n211","k":"fang","t":"炙甘草汤","s":"津枯血燥（复脉）｜心悸、汗出、便干、咽干音哑","use":"心悸、汗出、便干、咽干音哑、脉结代、午后潮热；纯虚无实〔导〕","not":"还有水饮，先用深师复脉汤。复脉法的核心是去芍药：脉很细时不可再用芍药苦泄〔导〕","src":["导"],"comp":[{"n":"炙甘草汤","c":"桂枝18 生姜18 炙甘草24 大枣60 人参12 麻子仁24 阿胶12 麦冬24 生地100 清酒420","from":"skill"}],"tag":"津枯血燥（复脉）"}]},{"id":"n213","k":"row","t":"神与精","s":"酸枣仁汤、桂枝加龙骨牡蛎汤","children":[{"id":"n212","k":"fang","t":"酸枣仁汤","s":"营血虚不养神｜虚劳虚烦不得眠、神疲面白","use":"虚劳虚烦不得眠，神疲面白，轻度心悸头晕；须有轻微燥","not":"无燥有水不用","comp":[{"n":"酸枣仁汤","c":"酸枣仁100 川芎12 茯苓12 知母12 炙甘草6","from":"skill"}],"tag":"营血虚不养神"},{"id":"n214","k":"fang","t":"桂枝加龙骨牡蛎汤","s":"中风伤精｜失精梦交、久失眠健忘、睑半白","use":"失精梦交，久失眠健忘、睑半白；小儿夜啼夜汗","not":"有火，先用柴胡加龙骨牡蛎汤","comp":[{"n":"桂枝加龙骨牡蛎汤","c":"桂枝18 生姜18 炙甘草12 芍药18 大枣24 龙骨18 牡蛎18","from":"skill"}],"tag":"中风伤精"}]},{"id":"n216","k":"row","t":"虚劳","s":"大黄蟅虫丸、薯蓣丸","children":[{"id":"n215","k":"fang","t":"大黄蟅虫丸","s":"干血｜虚极羸瘦、腹满不能食","use":"虚极羸瘦、腹满不能食、肌肤甲错、两目黯黑；以虚为主","not":"—","tag":"干血"},{"id":"n217","k":"fang","t":"薯蓣丸","s":"诸不足｜虚劳诸不足、风气百疾","use":"虚劳诸不足、风气百疾；可作膏方","not":"—","comp":[{"n":"薯蓣丸","c":"人参3 白术3 茯苓3 甘草3 生地黄3 当归3 川芎3 白芍药3 干姜3 桂枝3 柴胡3 桔梗3 白蔹2 杏仁3 防风3 大豆黄卷3 阿胶3 麦门冬6 山药12 神曲12 大枣30 蜂蜜12 清酒60","from":"导图"}],"tag":"诸不足"}]}],"fam":"m8"},{"id":"m9","k":"matrix","t":"方阵九：少阴","s":"卫阳或真阳虚，有少阴证","d":"卫阳或真阳虚，用辛甘热；无汗不强汗，小便不利不强利〔skill〕。\n附子要有少阴证；怕冷手凉多是胃虚寒，不一定用附子；附子先桂枝、干姜，不够再上〔skill〕。","children":[{"id":"n219","k":"row","t":"表：卫阳虚","s":"麻黄附子甘草汤、麻黄附子细辛汤、桂枝加附子汤、…","children":[{"id":"n218","k":"fang","t":"麻黄附子甘草汤","s":"表·伤寒｜得之二三日、无里证、局部痛","use":"得之二三日、无里证；局部痛、倦怠；微发汗","tag":"表·伤寒"},{"id":"n220","k":"fang","t":"麻黄附子细辛汤","s":"表·兼水｜始得之反发热、脉沉","use":"始得之反发热、脉沉（兼太阴水饮）","tag":"表·兼水"},{"id":"n221","k":"fang","t":"桂枝加附子汤","s":"表·中风｜发汗漏不止、恶风、小便难","use":"发汗漏不止、恶风、小便难、四肢微急；怕冷手凉而多汗","comp":[{"n":"桂枝加附子汤","c":"桂枝18 生姜18 炙甘草18 芍药18 大枣24 炮附子6","from":"skill"}],"tag":"表·中风"},{"id":"n222","k":"fang","t":"桂枝去芍药加附子汤","s":"表·胸满｜下后脉微、恶寒、胸满","use":"下后脉微、恶寒、胸满","tag":"表·胸满"},{"id":"n223","k":"fang","t":"桂枝附子汤；桂枝附子去桂加白术汤","s":"表·外证｜风湿身体疼烦、不能转侧","use":"风湿身体疼烦、不能转侧、脉浮虚涩；大便坚而小便频数用去桂加白术","tag":"表·外证"},{"id":"n224","k":"fang","t":"附子汤","s":"表·湿痹｜背恶寒、身体痛、骨节痛","use":"背恶寒、身体痛、骨节痛、口中黏腻","comp":[{"n":"附子汤","c":"炮附子12 人参12 白术24 茯苓18 芍药18","from":"skill"}],"tag":"表·湿痹"},{"id":"n225","k":"fang","t":"桂枝甘草龙骨牡蛎汤；桂枝救逆汤","s":"表·惊悸｜火逆烦躁、偏虚寒的失眠","use":"火逆烦躁、偏虚寒的失眠；急性失眠、惊恐、梦中喊叫、心悸、扪手凉，无热的烦躁","comp":[{"n":"桂枝救逆汤","c":"桂枝18 生姜18 炙甘草12 大枣24 蜀漆18 龙骨24 牡蛎30","from":"skill"}],"tag":"表·惊悸"}]},{"id":"n227","k":"row","t":"里：真阳虚","s":"真武汤、四逆汤；通脉四逆汤、白通汤、干姜附子汤…","children":[{"id":"n226","k":"fang","t":"真武汤","s":"表里·水血｜见方阵七","use":"见方阵七","comp":[{"n":"真武汤","c":"炮附子6 芍药18 茯苓18 白术12 生姜18","from":"skill"}],"tag":"表里·水血"},{"id":"n228","k":"fang","t":"四逆汤；通脉四逆汤","s":"里｜脉沉、下利清谷、里寒外热","use":"脉沉、下利清谷；里寒外热、面赤、脉微欲绝（生附子配干姜）","tag":"里"},{"id":"n229","k":"fang","t":"白通汤","s":"里兼表｜真阳、卫阳俱虚、下利、厥冷","use":"真阳、卫阳俱虚：下利、厥冷、但欲寐，加轻度鼻塞清涕","tag":"里兼表"},{"id":"n230","k":"fang","t":"干姜附子汤；茯苓四逆汤","s":"里·烦躁｜昼日烦躁、夜而安静","use":"昼日烦躁、夜而安静；烦躁兼水饮","tag":"里·烦躁"}]},{"id":"n232","k":"row","t":"热化","s":"猪苓汤、黄连阿胶汤","children":[{"id":"n231","k":"fang","t":"猪苓汤","s":"热化｜下利、咳、呕、渴、心烦不得眠","use":"下利、咳、呕、渴、心烦不得眠、小便不利或尿血","tag":"热化"},{"id":"n233","k":"fang","t":"黄连阿胶汤","s":"热化｜心中烦、不得卧","use":"心中烦、不得卧（实为阳明火热伤血）","tag":"热化"}]},{"id":"n235","k":"row","t":"咽痛","s":"甘草汤→半夏散及汤→桔梗汤→猪肤汤→苦酒汤","children":[{"id":"n234","k":"fang","t":"甘草汤 → 半夏散及汤 → 桔梗汤 → 猪肤汤 → 苦酒汤","s":"咽痛｜津不濡→ 加寒湿→ 化热 …","use":"津不濡（急性失声）→ 加寒湿（反酸、手冷）→ 化热 → 化燥 → 寒热错杂化脓","comp":[{"n":"苦酒汤","c":"半夏6 蛋清1枚 苦酒60","from":"讲稿"}],"tag":"咽痛"}]}],"fam":"m9"}],"fam":"logic"},{"id":"d-review","k":"branch","t":"四、复诊：守还是转","s":"守方要两条件同时满足","d":"守方两条件：本诊所急所苦正是上诊方的方眼；定义上诊方的那一层还在，也没有它管不到的新层〔skill〕。","children":[{"id":"n284","k":"info","t":"守格","s":"本诊所急所苦正是上诊方的方眼","d":"本诊所急所苦正是上诊方的方眼，而且定义这一格的那一层还在、没有它管不到的新层。两条同时满足才守。〔skill〕"},{"id":"n297","k":"info","t":"方眼怎么认","s":"按方阵表里的方眼列，不按\"在改善的症状\"","d":"\"方眼\"按该方的方眼列判断，不是\"这几诊它在改善的症状\"。上诊方的方眼已消、旧症加重成了所苦 → 转；上诊方自带的清热或温药管得到的轻度热显、寒显 → 可守〔skill〕。"},{"id":"n298","k":"info","t":"曹老守方率","s":"全体只有 8%：默认要转","d":"训练集有效复诊，守方全体 8%（143/1786）〔skill〕。\n守得多的：柴胡加龙骨牡蛎汤 5/13、百痛壮热方 4/12、大柴胡汤 4/17、小品黄芪汤 11/70、防己黄芪汤 5/36、黄芪桂枝茯苓汤 5/42、黄芪竹叶汤 7/59。\n很少守的：柴胡桂枝枳实汤 10/93、竹叶前胡汤 2/74、阴旦解肌汤 1/34、桂枝厚朴当归汤 1/40、黄芩去大枣加栀子厚朴栝楼汤 1/24、百合前胡汤 0/23、芪芍柴胡枳实丸 0/23、桂枝加黄芪汤 0/20、奔豚汤 0/17。\n守方率低的方（表方、气火方）守方最多排第 2。"},{"id":"n285","k":"info","t":"列间移动（水火气血）","s":"饮去而热显、移火列、热退而寒现","d":"饮去而热显，移火列；热退而寒现、血少显，移血列或回阳旦；只治水、治火而冲逆不缓，移气列。〔厥〕〔skill〕"},{"id":"n286","k":"info","t":"行间移动（要不要桂枝）","s":"表寒退、里阳盛、移到去桂的一行","d":"表寒退、里阳盛，移到去桂的一行（柴胡桂枝汤行 → 小柴胡汤行；前胡桂枝汤行 → 小前胡汤行）；表寒显、恶风寒、扪手凉，移到有桂的一行。〔厥〕"},{"id":"n287","k":"info","t":"法间移动","s":"柴胡法清火后虚寒显、移前胡法","d":"柴胡法清火后虚寒显，移前胡法；前胡法后热起，移柴胡法；津血不足，移酸药法补敛。最常见的往返\"柴胡桂枝枳实汤 ⇄ 竹叶前胡汤\"，就是柴胡法气格与前胡法基础格之间、少阳中风与厥阴中风之间的来回。〔厥〕〔skill〕"},{"id":"n288","k":"info","t":"方阵间移动","s":"攻下后里实去、转阳旦、温补后热显","d":"攻下后里实去，转阳旦（方阵五或方阵二）；温补后热显，转方阵三或方阵六；表药一两诊就转；黄芪族每诊重过门槛，肿消就离开方阵二。〔skill〕"},{"id":"n289","k":"info","t":"导图的先后箭头","d":"箭头上的原话见《导图常用方梳理.md》第七节。最后两条导图没写明条件，是我的读法，依据见同文第九节。","children":[{"id":"n290","k":"info","t":"先去水，后补虚","s":"桂枝厚朴当归汤 → 桂枝人参汤","d":"桂枝厚朴当归汤 → 桂枝人参汤；黄芪桂枝五物汤 → 黄芪桂枝茯苓汤 → 小品黄芪汤；深师复脉汤 →（去细辛加大枣汤）→ 炙甘草汤。"},{"id":"n291","k":"info","t":"邪盛不先补","s":"百合前胡汤 → 千金大解肌汤","d":"百合前胡汤 → 千金大解肌汤。"},{"id":"n292","k":"info","t":"同一行里升级","s":"柴胡桂枝汤 → 柴胡桂枝枳实汤 → 千金柴…","d":"柴胡桂枝汤 → 柴胡桂枝枳实汤 → 千金柴胡桂枝茯苓丸。"},{"id":"n293","k":"info","t":"辛燥太过转温润","s":"外台麻黄五味子汤 → 千金款冬花煎","d":"外台麻黄五味子汤 → 千金款冬花煎。"},{"id":"n294","k":"info","t":"由深出浅","s":"伤精为主用复脉法或桂枝加龙骨牡蛎汤","d":"伤精为主用复脉法或桂枝加龙骨牡蛎汤，伤精缓解后转治伤营（新加归地汤、小品黄芪汤）。"},{"id":"n295","k":"info","t":"阳明血证兼表","s":"千金当归竹茹汤用后里热减轻","d":"千金当归竹茹汤用后里热减轻、又出现轻度表寒，转千金桂枝竹皮黄芩汤。"}]},{"id":"n296","k":"info","t":"收尾","s":"三阳从本经、太阴、少阴以阳旦法收尾","d":"三阳从本经；太阴、少阴以阳旦法收尾；厥阴以酸药法收尾。〔厥〕"}],"fam":"review"}],"fam":"flow"};
+(function () {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DUR = reduce ? 0 : 280;
+  const ROW = 56, GAP = 64, PADX = 12, CHIP = 18, TG = 21;
+  const SRC_LABEL = { '伤': '伤寒论讲义笔记', '金': '金匮要略笔记', '酸': '酸药法要', '痹': '血痹分阴阳',
+    '厥': '厥阴中风三法', 'skill': '曹老医案统计（skill）', '导': '你的思维导图' };
+  const COMP_FROM = { 'skill': '曹老常用方组成（skill 第 13 节）', '讲稿': '年会讲稿的方证卡', '导图': '你的思维导图' };
+  const KIND = { root: 'n-root', branch: 'n-solid', matrix: 'n-solid', fa: 'n-mid', row: 'n-mid', group: 'n-mid',
+    step: 'n-mid', route: 'n-mid', info: 'n-mid n-info', fang: 'n-leaf' };
+
+  // ---------- data
+  const byId = new Map();
+  (function init(n, parent, fam) {
+    n.up = parent; n.fam = n.fam || fam || 'flow'; byId.set(n.id, n);
+    (n.children || []).forEach(c => init(c, n, n.fam));
+  })(DATA, null, 'flow');
+  const START = ['root', 'c-matrices'];
+  let expanded = new Set(START);
+  let selected = null;
+  let touched = false;
+  let view = 'map';
+
+  // ---------- helpers
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rich = s => esc(s).replace(/〔([^〕]*)〕/g, '<span class="src">〔$1〕</span>');
+  const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+  function ancestors(d) { const a = []; for (let p = d.up; p; p = p.up) a.unshift(p); return a; }
+  function chipOf(d) {
+    const t = d.tag || '';
+    if (d.k !== 'fang' || !t) return null;
+    if (t.startsWith('基础')) return '基';
+    if (t.startsWith('寒热')) return '寒热';
+    return '水火气血寒'.includes(t[0]) ? t[0] : null;
+  }
+  function paragraphs(text) {
+    const lines = text.split('\n').filter(x => x.trim());
+    let html = '', list = [];
+    const flush = () => { if (list.length) { html += '<ul>' + list.map(li => `<li>${rich(li)}</li>`).join('') + '</ul>'; list = []; } };
+    lines.forEach(l => { if (l.startsWith('- ')) list.push(l.slice(2)); else { flush(); html += `<p>${rich(l)}</p>`; } });
+    flush();
+    return html;
+  }
+  function herbs(comp) {
+    // A bracketed note that contains spaces (e.g. another version's doses) is shown below, not as herbs.
+    const notes = [];
+    const main = comp.replace(/（[^）]*\s[^）]*）/g, m => { notes.push(m.slice(1, -1)); return ' '; });
+    return '<div class="herbs">' + main.split(/\s+/).filter(Boolean).map(tok => {
+      const m = tok.match(/^([一-鿿]{1,8})([\d.]+(?:[–-][\d.]+)?)(ml|g|枚|个)?(（[^）]*）)?[，,]?$/);
+      if (!m) return `<span class="herb-note">${esc(tok)}</span>`;
+      return `<span class="herb"><b>${esc(m[1])}</b><span>${esc(m[2])}${m[3] ? esc(m[3]) : ''}</span>${m[4] ? `<i>${esc(m[4])}</i>` : ''}</span>`;
+    }).join('') + '</div>' + notes.map(n => `<p class="comp-from">注：${esc(n)}</p>`).join('');
+  }
+
+  // ---------- measuring
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const rootStyle = getComputedStyle(document.documentElement);
+  const FONT_D = rootStyle.getPropertyValue('--font-display').trim();
+  const FONT_B = rootStyle.getPropertyValue('--font-body').trim();
+  const mcache = new Map();
+  function textW(text, font) { ctx.font = font; return ctx.measureText(text).width; }
+  function metrics(d) {
+    if (mcache.has(d.id)) return mcache.get(d.id);
+    const strong = d.k === 'root' || d.k === 'branch' || d.k === 'matrix';
+    const size = d.k === 'root' ? 18 : strong ? 15 : 14;
+    const label = clip(d.t, 22);
+    const sub = d.s ? clip(d.s, 26) : '';
+    const chip = chipOf(d);
+    const chipW = chip ? (chip.length > 1 ? 28 : CHIP) + 8 : 0;
+    const lw = textW(label, `${strong ? 700 : 600} ${size}px ${FONT_D}`);
+    const sw = sub ? textW(sub, `400 11.5px ${FONT_B}`) : 0;
+    const w = Math.max(64, Math.ceil(PADX * 2 + chipW + Math.max(lw, sw)));
+    const h = sub ? (size > 14 ? 52 : 46) : (size > 14 ? 38 : 32);
+    const m = { w, h, label, sub, chip, chipW, size };
+    mcache.set(d.id, m);
+    return m;
+  }
+
+  // ---------- svg
+  const svg = d3.select('#map');
+  const stage = svg.append('g');
+  const gLinks = stage.append('g');
+  const gNodes = stage.append('g');
+  const zoom = d3.zoom().scaleExtent([0.18, 2.6]).clickDistance(5).tapDistance(12)
+    .on('start', e => { if (e.sourceEvent) touched = true; })
+    .on('zoom', e => stage.attr('transform', e.transform));
+  svg.call(zoom).on('dblclick.zoom', null);
+
+  const pos = new Map();
+  const curve = (x0, y0, x1, y1) => { const mx = (x0 + x1) / 2; return `M${x0},${y0}C${mx},${y0} ${mx},${y1} ${x1},${y1}`; };
+
+  function buildNode(g, n) {
+    const d = n.data;
+    g.attr('class', 'node ' + KIND[d.k]).attr('style', `--fam:var(--c-${d.fam})`)
+      .attr('tabindex', 0).attr('role', 'treeitem').attr('aria-label', d.t + (d.s ? '：' + d.s : ''));
+    g.append('rect').attr('class', 'box');
+    if (n.m.chip) { const c = g.append('g').attr('class', 'chip'); c.append('rect'); c.append('text'); }
+    g.append('text').attr('class', 'lb');
+    g.append('text').attr('class', 'sb');
+    if (d.children) {
+      const t = g.append('g').attr('class', 'tg');
+      t.append('circle').attr('r', 9);
+      t.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em');
+      t.on('click', e => { e.stopPropagation(); touched = true; toggle(d); });
+    }
+    g.on('click', e => { e.stopPropagation(); touched = true; onNode(d); })
+      .on('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNode(d); } });
+  }
+  function paintNode(g, n) {
+    const d = n.data, m = n.m;
+    g.classed('sel', d === selected).attr('aria-expanded', d.children ? String(expanded.has(d.id)) : null);
+    g.select('rect.box').attr('width', m.w).attr('height', m.h).attr('rx', d.k === 'root' ? m.h / 2 : 8);
+    const x0 = PADX + m.chipW;
+    if (m.chip) {
+      const cw = m.chipW - 8;
+      g.select('.chip rect').attr('x', PADX).attr('y', (m.h - CHIP) / 2).attr('width', cw).attr('height', CHIP).attr('rx', 3);
+      g.select('.chip text').attr('x', PADX + cw / 2).attr('y', m.h / 2).attr('dy', '0.36em').attr('text-anchor', 'middle').text(m.chip);
+    }
+    const lb = g.select('text.lb').attr('x', x0).style('font-size', m.size + 'px').text(m.label);
+    if (m.sub) {
+      lb.attr('y', m.h / 2 - 3).attr('dy', null);
+      g.select('text.sb').attr('x', x0).attr('y', m.h / 2 + 14).text(m.sub);
+    } else {
+      lb.attr('y', m.h / 2).attr('dy', '0.36em');
+      g.select('text.sb').text('');
+    }
+    if (d.children) {
+      g.select('.tg').attr('transform', `translate(${m.w + 12},${m.h / 2})`);
+      g.select('.tg text').text(expanded.has(d.id) ? '−' : d.children.length);
+    }
+  }
+
+  function update(srcId, instant) {
+    const h = d3.hierarchy(DATA, d => (expanded.has(d.id) ? d.children : null));
+    h.each(n => { n.m = metrics(n.data); });
+    const maxW = [];
+    h.each(n => { maxW[n.depth] = Math.max(maxW[n.depth] || 0, n.m.w); });
+    const colX = [0];
+    for (let i = 1; i < maxW.length; i++) colX[i] = colX[i - 1] + maxW[i - 1] + GAP;
+    d3.tree().nodeSize([ROW, 1]).separation((a, b) => (a.parent === b.parent ? 1 : 1.3))(h);
+    h.each(n => { n.X = colX[n.depth]; n.Y = n.x; });
+    const nodes = h.descendants(), links = h.links();
+    const src = (srcId && pos.get(srcId)) || { X: 0, Y: 0, w: 0 };
+    const sx = src.X + src.w + TG, sy = src.Y;
+    const T = svg.transition('layout').duration(instant ? 0 : DUR);
+
+    gLinks.selectAll('path.link').data(links, l => l.target.data.id).join(
+      enter => enter.append('path').attr('class', 'link').attr('style', l => `--fam:var(--c-${l.target.data.fam})`)
+        .attr('d', curve(sx, sy, sx, sy)),
+      upd => upd,
+      exit => exit.call(x => x.transition(T).attr('d', curve(sx, sy, sx, sy)).remove())
+    ).call(x => x.transition(T).attr('d', l => curve(l.source.X + l.source.m.w + TG, l.source.Y, l.target.X, l.target.Y)));
+
+    const sel = gNodes.selectAll('g.node').data(nodes, n => n.data.id);
+    const ent = sel.enter().append('g').attr('transform', `translate(${sx},${sy})`).attr('opacity', 0)
+      .each(function (n) { buildNode(d3.select(this), n); });
+    const all = ent.merge(sel);
+    all.each(function (n) { paintNode(d3.select(this), n); });
+    all.transition(T).attr('opacity', 1).attr('transform', n => `translate(${n.X},${n.Y - n.m.h / 2})`);
+    sel.exit().transition(T).attr('opacity', 0).attr('transform', `translate(${sx},${sy})`).remove();
+    pos.clear();
+    nodes.forEach(n => pos.set(n.data.id, { X: n.X, Y: n.Y, w: n.m.w, h: n.m.h }));
+  }
+  function repaintSelection() {
+    gNodes.selectAll('g.node').classed('sel', n => n.data === selected);
+    document.querySelectorAll('.o-leaf.on').forEach(el => el.classList.remove('on'));
+    if (selected) { const el = document.querySelector(`.o-leaf[data-id="${selected.id}"]`); if (el) el.classList.add('on'); }
+  }
+
+  // ---------- view geometry
+  const main = document.getElementById('main');
+  const panel = document.getElementById('panel');
+  const phone = () => window.matchMedia('(max-width: 720px)').matches;
+  function avail() {
+    const r = svg.node().getBoundingClientRect();
+    let W = r.width, H = r.height;
+    if (!panel.hidden) {
+      if (phone()) H = Math.max(140, H - panel.getBoundingClientRect().height);
+      else W = Math.max(240, W - panel.getBoundingClientRect().width - 28);
+    }
+    return { W, H };
+  }
+  function fit(instant) {
+    if (!pos.size) return;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    pos.forEach(p => { x0 = Math.min(x0, p.X); x1 = Math.max(x1, p.X + p.w + TG + 10); y0 = Math.min(y0, p.Y - p.h / 2); y1 = Math.max(y1, p.Y + p.h / 2); });
+    const { W, H } = avail();
+    const k = Math.max(0.18, Math.min(1.05, (W - 48) / (x1 - x0), (H - 48) / (y1 - y0)));
+    const tx = (W - (x1 - x0) * k) / 2 - x0 * k, ty = (H - (y1 - y0) * k) / 2 - y0 * k;
+    svg.transition().duration(instant ? 0 : DUR * 1.4).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+  }
+  function centerOn(id, withKids) {
+    const p = pos.get(id);
+    if (!p) return;
+    const k = Math.max(d3.zoomTransform(svg.node()).k, phone() ? 0.62 : 0.72);
+    const { W, H } = avail();
+    let cy = p.Y;
+    const d = byId.get(id);
+    if (withKids && d.children && expanded.has(id)) {
+      const ys = d.children.map(c => pos.get(c.id)).filter(Boolean).map(q => q.Y);
+      if (ys.length) {
+        const mid = (Math.min(...ys) + Math.max(...ys)) / 2;
+        const lim = (H * 0.36) / k;
+        cy = Math.min(p.Y + lim, Math.max(p.Y - lim, mid));
+      }
+    }
+    const tx = Math.min(W * 0.2, 90) - p.X * k, ty = H / 2 - cy * k;
+    svg.transition().duration(DUR * 1.4).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+  }
+
+  // ---------- actions
+  function collapse(d) {
+    const stack = [d];
+    while (stack.length) { const x = stack.pop(); expanded.delete(x.id); (x.children || []).forEach(c => stack.push(c)); }
+  }
+  function toggle(d) {
+    if (expanded.has(d.id)) { collapse(d); update(d.id); }
+    else { expanded.add(d.id); update(d.id); centerOn(d.id, true); }
+  }
+  function onNode(d) {
+    const has = d.children && d.children.length;
+    if (has && !expanded.has(d.id)) { expanded.add(d.id); select(d); update(d.id); centerOn(d.id, true); return; }
+    if (has && selected === d) { collapse(d); update(d.id); return; }
+    select(d);
+  }
+  function goTo(id) {
+    const d = byId.get(id);
+    if (!d) return;
+    ancestors(d).forEach(a => expanded.add(a.id));
+    if (view === 'map') {
+      update(d.up ? d.up.id : null);
+      select(d);
+      centerOn(d.id, false);
+    } else {
+      select(d);
+      openOutlinePath(d);
+    }
+  }
+
+  // ---------- panel
+  const body = document.getElementById('p-body');
+  const crumbs = document.getElementById('crumbs');
+  function select(d) {
+    selected = d;
+    panel.hidden = false;
+    main.classList.add('with-panel');
+    panel.style.setProperty('--fam', `var(--c-${d.fam})`);
+    const path = ancestors(d);
+    crumbs.innerHTML = path.length
+      ? path.map(a => `<button data-go="${a.id}">${esc(a.t)}</button>`).join('<span aria-hidden="true">›</span>')
+      : '<span>从这里开始</span>';
+    let html = `<div class="p-title"><h2>${esc(d.t)}</h2>${d.tag ? `<span class="p-tag">${esc(d.tag)}</span>` : ''}</div>`;
+    if (d.s) html += `<p class="lead">${rich(d.s)}</p>`;
+    if (d.use) html += `<div class="sec"><h3>什么情况用</h3>${paragraphs(d.use)}</div>`;
+    if (d.not) html += `<div class="sec"><h3>不用／转到</h3>${paragraphs(d.not)}</div>`;
+    if (d.k === 'fang') {
+      if (d.comp && d.comp.length) {
+        html += '<div class="sec"><h3>组成（原方原量，g）</h3>';
+        d.comp.forEach(c => {
+          if (d.comp.length > 1 || c.n !== d.t) html += `<div class="comp-name">${esc(c.n)}</div>`;
+          html += herbs(c.c);
+        });
+        html += `<div class="comp-from">来源：${esc(COMP_FROM[d.comp[0].from] || d.comp[0].from)}</div></div>`;
+      } else {
+        html += '<div class="sec"><h3>组成</h3><p class="missing">资料里没有这张方换算好的剂量。</p></div>';
+      }
+    }
+    if (d.d) html += `<div class="sec"><h3>${d.k === 'fang' ? '备注' : '要点'}</h3>${paragraphs(d.d)}</div>`;
+    if (d.k === 'root') {
+      html += '<div class="sec"><h3>怎么看这张图</h3><div class="legend">' +
+        '<span><i class="lg-solid"></i>方阵</span><span><i class="lg-mid"></i>法、行、步骤</span>' +
+        '<span><i class="lg-leaf"></i>方</span><span><i class="lg-info"></i>说明</span>' +
+        '<span><b>水</b><b>火</b><b>气</b><b>血</b>方所在的列</span></div>' +
+        '<p>框右边圆圈里的数字是下一层有几条。点圆圈只展开或收起；点框会同时在这里显示说明。' +
+        '拖动可以平移，滚轮或双指可以缩放，按 / 键直接搜索。手机上默认用「大纲」视图，点「导图」切回思维导图。</p></div>';
+    }
+    if (d.link && byId.has(d.link)) {
+      const t = byId.get(d.link);
+      html += `<div class="sec"><button class="go" data-go="${t.id}">去看：${esc(t.t)} →</button></div>`;
+    }
+    if (d.children && d.children.length) {
+      html += `<div class="sec"><h3>下一层（${d.children.length}）</h3><div class="kids">` +
+        d.children.map(c => `<button class="kid" data-go="${c.id}"><b>${esc(c.t)}</b>${c.s ? `<span>${esc(c.s)}</span>` : ''}</button>`).join('') +
+        '</div></div>';
+    }
+    if (d.src && d.src.length) {
+      html += '<div class="sec"><h3>出处</h3><div class="srcs">' +
+        d.src.map(s => `<span>〔${esc(s)}〕${esc(SRC_LABEL[s] || '')}</span>`).join('') + '</div></div>';
+    }
+    body.innerHTML = html;
+    body.scrollTop = 0;
+    repaintSelection();
+  }
+  function closePanel() {
+    selected = null;
+    panel.hidden = true;
+    main.classList.remove('with-panel');
+    repaintSelection();
+  }
+  document.getElementById('p-close').addEventListener('click', closePanel);
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('[data-go]');
+    if (b) goTo(b.getAttribute('data-go'));
+  });
+
+  // ---------- outline
+  const outline = document.getElementById('outline');
+  function buildOutline() {
+    const make = (d, depth) => {
+      if (d.children && d.children.length) {
+        const det = document.createElement('details');
+        det.dataset.id = d.id;
+        det.style.setProperty('--fam', `var(--c-${d.fam})`);
+        if (START.includes(d.id)) det.open = true;
+        const sum = document.createElement('summary');
+        sum.innerHTML = `<span class="o-t">${esc(d.t)}</span>${d.s ? `<span class="o-s">${esc(d.s)}</span>` : ''}`;
+        const info = document.createElement('button');
+        info.className = 'o-info';
+        info.textContent = '详情';
+        info.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); select(d); });
+        sum.appendChild(info);
+        det.appendChild(sum);
+        const box = document.createElement('div');
+        d.children.forEach(c => box.appendChild(make(c, depth + 1)));
+        det.appendChild(box);
+        return det;
+      }
+      const b = document.createElement('button');
+      b.className = 'o-leaf';
+      b.dataset.id = d.id;
+      b.style.setProperty('--fam', `var(--c-${d.fam})`);
+      const chip = chipOf(d);
+      b.innerHTML = `${chip ? `<span class="o-chip">${esc(chip)}</span>` : ''}<span class="o-t">${esc(d.t)}</span>${d.s ? `<span class="o-s">${esc(d.s)}</span>` : ''}`;
+      b.addEventListener('click', () => select(d));
+      return b;
+    };
+    const wrap = document.createElement('div');
+    wrap.className = 'o-root';
+    wrap.appendChild(make(DATA, 0));
+    outline.appendChild(wrap);
+  }
+  function openOutlinePath(d) {
+    ancestors(d).forEach(a => { const el = outline.querySelector(`details[data-id="${a.id}"]`); if (el) el.open = true; });
+    const el = outline.querySelector(`[data-id="${d.id}"]`);
+    if (el) el.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+  }
+  function setView(v) {
+    view = v;
+    document.getElementById('v-map').setAttribute('aria-pressed', String(v === 'map'));
+    document.getElementById('v-outline').setAttribute('aria-pressed', String(v === 'outline'));
+    svg.node().style.display = v === 'map' ? '' : 'none';
+    outline.hidden = v !== 'outline';
+    document.getElementById('b-fit').hidden = v !== 'map';
+    if (v === 'outline' && !outline.firstChild) buildOutline();
+    if (v === 'outline' && selected) openOutlinePath(selected);
+    if (v === 'map') { update(null, true); if (selected && pos.has(selected.id)) centerOn(selected.id, false); else fit(true); }
+  }
+  document.getElementById('v-map').addEventListener('click', () => setView('map'));
+  document.getElementById('v-outline').addEventListener('click', () => setView('outline'));
+  document.getElementById('b-fit').addEventListener('click', () => fit(false));
+  document.getElementById('b-reset').addEventListener('click', () => {
+    expanded = new Set(START);
+    if (view === 'map') { update('root'); fit(false); }
+    else outline.querySelectorAll('details').forEach(el => { el.open = START.includes(el.dataset.id); });
+  });
+  document.getElementById('b-all').addEventListener('click', () => {
+    byId.forEach(d => { if (d.children) expanded.add(d.id); });
+    if (view === 'map') { update('root'); fit(false); }
+    else outline.querySelectorAll('details').forEach(el => { el.open = true; });
+  });
+
+  // ---------- search
+  const q = document.getElementById('q');
+  const results = document.getElementById('results');
+  const flat = [];
+  byId.forEach(d => flat.push(d));
+  function search() {
+    const term = q.value.trim();
+    if (!term) { results.hidden = true; return; }
+    const hits = [];
+    flat.forEach(d => {
+      let score = -1;
+      if (d.t.includes(term)) score = 0;
+      else if ((d.s || '').includes(term)) score = 1;
+      else if ((d.use || '').includes(term) || (d.d || '').includes(term) || (d.not || '').includes(term)) score = 2;
+      if (score >= 0) hits.push([score + (d.k === 'fang' ? 0 : 0.5), d]);
+    });
+    hits.sort((a, b) => a[0] - b[0]);
+    results.innerHTML = hits.length
+      ? hits.slice(0, 16).map(([, d]) => {
+        const path = ancestors(d).slice(1).map(a => a.t).join(' › ');
+        return `<button role="option" data-go="${d.id}"><span class="r-t">${esc(d.t)}</span>${d.s ? `<span class="r-s">${esc(clip(d.s, 22))}</span>` : ''}<span class="r-p">${esc(path)}</span></button>`;
+      }).join('')
+      : '<div class="r-none">没有找到。换个方名或症状试试。</div>';
+    results.hidden = false;
+  }
+  q.addEventListener('input', search);
+  q.addEventListener('focus', () => { if (q.value.trim()) search(); });
+  results.addEventListener('click', e => {
+    const b = e.target.closest('[data-go]');
+    if (!b) return;
+    results.hidden = true;
+    goTo(b.getAttribute('data-go'));
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.search')) results.hidden = true; });
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') { if (!results.hidden) results.hidden = true; else if (!panel.hidden) closePanel(); }
+  });
+
+  // ---------- start
+  update(null, true);
+  if (phone()) setView('outline');
+  else { select(DATA); fit(true); }
+  const refit = () => { mcache.clear(); update(null, true); if (!touched) fit(true); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+  let rt;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!touched && view === 'map') fit(true); }, 150); });
+})();
+</script>
